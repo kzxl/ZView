@@ -22,6 +22,7 @@ namespace ZView.ViewModels
         private readonly IImageLoaderService _imageLoader;
         private readonly IFolderNavigationService _navigation;
         private readonly IImageCacheService _cache;
+        private readonly IRecentFilesService _recentFiles;
 
         private BitmapSource? _currentImageSource;
         private ImageMetadataInfo? _currentMetadata;
@@ -38,12 +39,15 @@ namespace ZView.ViewModels
         private bool _isOsdVisible;
         private CancellationTokenSource? _loadCts;
         private CancellationTokenSource? _prefetchCts;
+        private CancellationTokenSource? _thumbnailCts;
 
         // Theme and Localization
         private bool _isDarkMode = false;
         private bool _isVietnamese = true;
 
         public ObservableCollection<ImageFileItem> Items { get; } = new();
+        public ObservableCollection<RecentFileEntry> RecentItems { get; } = new();
+        public bool HasRecentItems => RecentItems.Count > 0;
 
         public bool IsDarkMode
         {
@@ -229,18 +233,28 @@ namespace ZView.ViewModels
         public ICommand CopyPathCommand { get; }
         public ICommand DeleteFileCommand { get; }
         public ICommand RefreshCommand { get; }
+        public ICommand OpenRecentItemCommand { get; }
 
-        public MainViewModel(IImageLoaderService imageLoader, IFolderNavigationService navigation, IImageCacheService cache)
+        public MainViewModel(IImageLoaderService imageLoader, IFolderNavigationService navigation, IImageCacheService cache, IRecentFilesService? recentFiles = null)
         {
             _imageLoader = imageLoader ?? throw new ArgumentNullException(nameof(imageLoader));
             _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            _recentFiles = recentFiles ?? new RecentFilesService();
 
             _navigation.CurrentItemChanged += OnNavigationCurrentItemChanged;
             _navigation.ItemsListChanged += OnNavigationItemsListChanged;
 
             OpenFileCommand = new RelayCommand(OpenFile);
             OpenFolderCommand = new RelayCommand(OpenFolder);
+            OpenRecentItemCommand = new RelayCommand(param =>
+            {
+                if (param is RecentFileEntry entry)
+                {
+                    _ = OpenFileOrDirectoryAsync(entry.Path);
+                }
+            });
+
             NextCommand = new RelayCommand(() => _navigation.MoveNext(), () => _navigation.HasNext);
             PreviousCommand = new RelayCommand(() => _navigation.MovePrevious(), () => _navigation.HasPrevious);
             FirstCommand = new RelayCommand(() => _navigation.MoveFirst(), () => _navigation.TotalCount > 0);
@@ -279,12 +293,30 @@ namespace ZView.ViewModels
             CopyPathCommand = new RelayCommand(CopyPathToClipboard, () => CurrentItem != null);
             DeleteFileCommand = new RelayCommand(DeleteCurrentFile, () => CurrentItem != null);
             RefreshCommand = new RelayCommand(() => _navigation.Refresh());
+
+            RefreshRecentItems();
         }
 
+        public void RefreshRecentItems()
+        {
+            Application.Current?.Dispatcher.Invoke(() =>
+            {
+                RecentItems.Clear();
+                foreach (var r in _recentFiles.GetRecentItems())
+                {
+                    RecentItems.Add(r);
+                }
+                OnPropertyChanged(nameof(HasRecentItems));
+            });
+        }
 
         public async Task OpenFileOrDirectoryAsync(string path)
         {
             if (string.IsNullOrWhiteSpace(path)) return;
+
+            bool isDir = Directory.Exists(path);
+            _recentFiles.AddRecent(path, isDir);
+            RefreshRecentItems();
 
             if (File.Exists(path))
             {
@@ -298,7 +330,7 @@ namespace ZView.ViewModels
                     _navigation.LoadFiles(new[] { path }, path);
                 }
             }
-            else if (Directory.Exists(path))
+            else if (isDir)
             {
                 _navigation.LoadDirectory(path);
             }
@@ -345,22 +377,49 @@ namespace ZView.ViewModels
                 OnPropertyChanged(nameof(TitleText));
             });
 
-            // Lazy load thumbnails in background
+            TriggerPriorityThumbnailLoading();
+        }
+
+        private void TriggerPriorityThumbnailLoading()
+        {
+            _thumbnailCts?.Cancel();
+            _thumbnailCts = new CancellationTokenSource();
+            var ct = _thumbnailCts.Token;
+
+            int curIdx = _navigation.CurrentIndex;
+            var allItems = _navigation.Items.ToList();
+            if (allItems.Count == 0) return;
+
             _ = Task.Run(async () =>
             {
-                foreach (var item in _navigation.Items)
+                // 1. Priority: visible window around current item [curIdx - 2 ... curIdx + 16]
+                var priorityList = new List<ImageFileItem>();
+                int start = Math.Max(0, curIdx - 2);
+                int end = Math.Min(allItems.Count - 1, curIdx + 16);
+                for (int i = start; i <= end; i++)
                 {
+                    if (i >= 0 && i < allItems.Count) priorityList.Add(allItems[i]);
+                }
+
+                // 2. Add remaining items
+                foreach (var it in allItems)
+                {
+                    if (!priorityList.Contains(it)) priorityList.Add(it);
+                }
+
+                foreach (var item in priorityList)
+                {
+                    if (ct.IsCancellationRequested) break;
                     if (item.Thumbnail == null)
                     {
-                        var thumb = await _imageLoader.LoadThumbnailAsync(item.FilePath).ConfigureAwait(false);
-                        if (thumb != null)
+                        var thumb = await _imageLoader.LoadThumbnailAsync(item.FilePath, targetSize: 160, ct).ConfigureAwait(false);
+                        if (thumb != null && !ct.IsCancellationRequested)
                         {
-                            item.Thumbnail = thumb;
                             Application.Current?.Dispatcher.Invoke(() => item.Thumbnail = thumb);
                         }
                     }
                 }
-            });
+            }, ct);
         }
 
         private async void OnNavigationCurrentItemChanged(object? sender, EventArgs e)

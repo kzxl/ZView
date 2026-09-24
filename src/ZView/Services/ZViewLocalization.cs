@@ -26,6 +26,7 @@ namespace ZView.Services
                 ["ZView.Empty.DragDrop"] = "Kéo thả ảnh hoặc thư mục vào đây để duyệt",
                 ["ZView.Empty.SupportedFormats"] = "Hỗ trợ 30+ định dạng ảnh: PNG, JPG, WEBP, AVIF, HEIC, TIFF, SVG, BMP, ICO, TGA, PSD, DNG...",
                 ["ZView.Empty.BrowseButton"] = "Chọn tệp ảnh...",
+                ["ZView.Empty.RecentFiles"] = "TỆP & THƯ MỤC MỞ GẦN ĐÂY",
 
                 // Navigation & Primary Actions
                 ["ZView.Nav.Open"] = "Mở tệp ảnh (Ctrl+O)",
@@ -140,6 +141,7 @@ namespace ZView.Services
                 ["ZView.Empty.DragDrop"] = "Drag & Drop images or folder here to view",
                 ["ZView.Empty.SupportedFormats"] = "Supported 30+ formats: PNG, JPG, WEBP, AVIF, HEIC, TIFF, SVG, BMP, ICO, TGA, PSD, DNG...",
                 ["ZView.Empty.BrowseButton"] = "Browse Image Files...",
+                ["ZView.Empty.RecentFiles"] = "RECENTLY OPENED IMAGES & FOLDERS",
 
                 // Navigation & Primary Actions
                 ["ZView.Nav.Open"] = "Open Image File (Ctrl+O)",

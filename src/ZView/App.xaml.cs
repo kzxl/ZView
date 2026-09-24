@@ -55,7 +55,20 @@ namespace ZView
         {
             Directory.CreateDirectory(outputDir);
 
-            // 1. Capture Empty State (Light Theme)
+            // 1. Add sample recent items and capture Empty State (Light Theme)
+            string sampleImg = @"E:\15. Other\ZeroUniverse\ZeroApps\ZStack\data\macro_flower_result.png";
+            string sampleFolder = @"E:\15. Other\ZeroUniverse\ZeroApps\ZStack\data";
+            if (File.Exists(sampleImg))
+            {
+                vm.OpenFileOrDirectoryAsync(sampleImg).GetAwaiter().GetResult();
+                if (Directory.Exists(sampleFolder))
+                {
+                    vm.OpenFileOrDirectoryAsync(sampleFolder).GetAwaiter().GetResult();
+                }
+            }
+
+            // Unload image to capture Empty State with Recent Files history card
+            vm.CurrentImageSource = null;
             ZeroUI.Wpf.Theme.ZeroWpfTheme.SetTheme(false);
             var win = new MainWindow(vm)
             {
@@ -69,7 +82,6 @@ namespace ZView
             CaptureWindow(win, Path.Combine(outputDir, "zview_empty_light.png"));
 
             // 2. Load Sample Image and Capture Light Theme
-            string sampleImg = @"E:\15. Other\ZeroUniverse\ZeroApps\ZStack\data\macro_flower_result.png";
             if (File.Exists(sampleImg))
             {
                 vm.OpenFileOrDirectoryAsync(sampleImg).GetAwaiter().GetResult();

@@ -403,7 +403,34 @@
 
                     <TextBlock Text="{loc:Loc Key=ZView.Empty.SupportedFormats, Default='Hỗ trợ chuẩn 30+ định dạng: PNG, JPG, WEBP, AVIF, HEIC, TIFF, BMP, ICO, TGA, PSD, SVG, RAW/DNG...'}" 
                                FontSize="11" Foreground="{DynamicResource ZeroUI.TextMuted}" 
-                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="16"/>
+                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="16" Margin="0,0,0,14"/>
+
+                    <!-- Recent Files History Section -->
+                    <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="8" Padding="14,10"
+                            Visibility="{Binding HasRecentItems, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Text="{loc:Loc Key=ZView.Empty.RecentFiles, Default='TỆP &amp; THƯ MỤC MỞ GẦN ĐÂY'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" Margin="0,0,0,6"/>
+                            <ItemsControl ItemsSource="{Binding RecentItems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource ToolbarBtnStyle}" 
+                                                Command="{Binding DataContext.OpenRecentItemCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}"
+                                                HorizontalContentAlignment="Left"
+                                                Height="26" Margin="0,1" Padding="6,2">
+                                            <DockPanel LastChildFill="True">
+                                                <TextBlock Text="{Binding FormattedSize}" DockPanel.Dock="Right" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding IconGlyph}" FontSize="11" Margin="0,0,6,0"/>
+                                                    <TextBlock Text="{Binding DisplayName}" FontSize="11" Foreground="{DynamicResource ZeroUI.TextPrimary}" TextTrimming="CharacterEllipsis" MaxWidth="340"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </Border>
 
