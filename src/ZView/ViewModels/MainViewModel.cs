@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using ZeroUI.Core.Media;
 using ZView.Core.Models;
 using ZView.Core.Services;
 
@@ -34,6 +35,26 @@ namespace ZView.ViewModels
         private bool _isOsdVisible;
         private CancellationTokenSource? _loadCts;
         private CancellationTokenSource? _prefetchCts;
+
+        // Interactive Specialized Modes
+        private bool _isAnnotationMode;
+        private AnnotationShapeType _annotationTool = AnnotationShapeType.BoundingBox;
+        private AnnotationSeverity _annotationSeverity = AnnotationSeverity.Defect;
+
+        private bool _isMeasurementMode;
+        private MeasurementMode _measurementMode = MeasurementMode.LinearDistance;
+        private MeasurementUnit _measurementUnit = MeasurementUnit.Millimeter;
+        private double _calibrationFactor = 1.0;
+
+        private bool _isWatermarkMode;
+        private string _watermarkText = "CONFIDENTIAL · {User} · {Date}";
+        private WatermarkPlacement _watermarkPlacement = WatermarkPlacement.DiagonalTiled;
+        private double _watermarkOpacity = 0.25;
+
+        private bool _isDeskewMode;
+        private double _deskewAngle = 0.0;
+        private bool _isBinarizationEnabled;
+        private byte _binarizationThreshold = 128;
 
         public ObservableCollection<ImageFileItem> Items { get; } = new();
 
@@ -129,12 +150,136 @@ namespace ZView.ViewModels
             set => SetProperty(ref _isOsdVisible, value);
         }
 
+        #region Interactive Modes Properties
+
+        public bool IsAnnotationMode
+        {
+            get => _isAnnotationMode;
+            set
+            {
+                if (SetProperty(ref _isAnnotationMode, value) && value)
+                {
+                    IsMeasurementMode = false;
+                    IsDeskewMode = false;
+                    ShowOsd("✏️ Annotation Mode Activated");
+                }
+            }
+        }
+
+        public AnnotationShapeType AnnotationTool
+        {
+            get => _annotationTool;
+            set => SetProperty(ref _annotationTool, value);
+        }
+
+        public AnnotationSeverity AnnotationSeverity
+        {
+            get => _annotationSeverity;
+            set => SetProperty(ref _annotationSeverity, value);
+        }
+
+        public bool IsMeasurementMode
+        {
+            get => _isMeasurementMode;
+            set
+            {
+                if (SetProperty(ref _isMeasurementMode, value) && value)
+                {
+                    IsAnnotationMode = false;
+                    IsDeskewMode = false;
+                    ShowOsd("📐 Optical Caliper & Measurement Mode Activated");
+                }
+            }
+        }
+
+        public MeasurementMode MeasurementMode
+        {
+            get => _measurementMode;
+            set => SetProperty(ref _measurementMode, value);
+        }
+
+        public MeasurementUnit MeasurementUnit
+        {
+            get => _measurementUnit;
+            set => SetProperty(ref _measurementUnit, value);
+        }
+
+        public double CalibrationFactor
+        {
+            get => _calibrationFactor;
+            set => SetProperty(ref _calibrationFactor, Math.Max(0.000001, value));
+        }
+
+        public bool IsWatermarkMode
+        {
+            get => _isWatermarkMode;
+            set
+            {
+                if (SetProperty(ref _isWatermarkMode, value))
+                {
+                    ShowOsd(value ? "🏷️ Watermark Overlay Enabled" : "Watermark Disabled");
+                }
+            }
+        }
+
+        public string WatermarkText
+        {
+            get => _watermarkText;
+            set => SetProperty(ref _watermarkText, value);
+        }
+
+        public WatermarkPlacement WatermarkPlacement
+        {
+            get => _watermarkPlacement;
+            set => SetProperty(ref _watermarkPlacement, value);
+        }
+
+        public double WatermarkOpacity
+        {
+            get => _watermarkOpacity;
+            set => SetProperty(ref _watermarkOpacity, Math.Max(0.01, Math.Min(1.0, value)));
+        }
+
+        public bool IsDeskewMode
+        {
+            get => _isDeskewMode;
+            set
+            {
+                if (SetProperty(ref _isDeskewMode, value) && value)
+                {
+                    IsAnnotationMode = false;
+                    IsMeasurementMode = false;
+                    ShowOsd("📄 Document Deskew & OCR Preprocessing Activated");
+                }
+            }
+        }
+
+        public double DeskewAngle
+        {
+            get => _deskewAngle;
+            set => SetProperty(ref _deskewAngle, Math.Max(-45.0, Math.Min(45.0, value)));
+        }
+
+        public bool IsBinarizationEnabled
+        {
+            get => _isBinarizationEnabled;
+            set => SetProperty(ref _isBinarizationEnabled, value);
+        }
+
+        public byte BinarizationThreshold
+        {
+            get => _binarizationThreshold;
+            set => SetProperty(ref _binarizationThreshold, value);
+        }
+
+        #endregion
+
         public ImageFileItem? CurrentItem => _navigation.CurrentItem;
         public int CurrentIndex => _navigation.CurrentIndex + 1;
         public int TotalCount => _navigation.TotalCount;
         public string TitleText => CurrentItem != null
             ? $"{CurrentItem.FileName} ({CurrentIndex}/{TotalCount}) — ZView"
-            : "ZView — Enterprise Image Viewer";
+            : "ZView — Enterprise Image Workstation";
 
         // Navigation & Interaction Commands
         public ICommand OpenFileCommand { get; }
@@ -147,6 +292,10 @@ namespace ZView.ViewModels
         public ICommand ToggleFullScreenCommand { get; }
         public ICommand ToggleMetadataCommand { get; }
         public ICommand ToggleFilmstripCommand { get; }
+        public ICommand ToggleAnnotationCommand { get; }
+        public ICommand ToggleMeasurementCommand { get; }
+        public ICommand ToggleWatermarkCommand { get; }
+        public ICommand ToggleDeskewCommand { get; }
         public ICommand CopyImageCommand { get; }
         public ICommand CopyPathCommand { get; }
         public ICommand DeleteFileCommand { get; }
@@ -178,6 +327,11 @@ namespace ZView.ViewModels
             ToggleFullScreenCommand = new RelayCommand(() => IsFullScreen = !IsFullScreen);
             ToggleMetadataCommand = new RelayCommand(() => IsMetadataDrawerOpen = !IsMetadataDrawerOpen);
             ToggleFilmstripCommand = new RelayCommand(() => IsFilmstripVisible = !IsFilmstripVisible);
+            ToggleAnnotationCommand = new RelayCommand(() => IsAnnotationMode = !IsAnnotationMode);
+            ToggleMeasurementCommand = new RelayCommand(() => IsMeasurementMode = !IsMeasurementMode);
+            ToggleWatermarkCommand = new RelayCommand(() => IsWatermarkMode = !IsWatermarkMode);
+            ToggleDeskewCommand = new RelayCommand(() => IsDeskewMode = !IsDeskewMode);
+
             CopyImageCommand = new RelayCommand(CopyImageToClipboard, () => CurrentImageSource != null);
             CopyPathCommand = new RelayCommand(CopyPathToClipboard, () => CurrentItem != null);
             DeleteFileCommand = new RelayCommand(DeleteCurrentFile, () => CurrentItem != null);
@@ -349,7 +503,7 @@ namespace ZView.ViewModels
                 try
                 {
                     Clipboard.SetImage(CurrentImageSource);
-                    ShowOsd("Image copied to clipboard");
+                    ShowOsd("📋 Image copied to clipboard");
                 }
                 catch { }
             }
@@ -362,7 +516,7 @@ namespace ZView.ViewModels
                 try
                 {
                     Clipboard.SetText(CurrentItem.FilePath);
-                    ShowOsd("File path copied to clipboard");
+                    ShowOsd("📁 File path copied to clipboard");
                 }
                 catch { }
             }
@@ -391,7 +545,7 @@ namespace ZView.ViewModels
 
                     _cache.Remove(pathToDelete);
                     _navigation.Refresh();
-                    ShowOsd("Moved to Recycle Bin");
+                    ShowOsd("🗑 Moved to Recycle Bin");
                 }
                 catch (Exception ex)
                 {
