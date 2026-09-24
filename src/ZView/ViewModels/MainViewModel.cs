@@ -56,7 +56,38 @@ namespace ZView.ViewModels
         private bool _isBinarizationEnabled;
         private byte _binarizationThreshold = 128;
 
+        // Theme and Localization
+        private bool _isDarkMode = false;
+        private bool _isVietnamese = true;
+
         public ObservableCollection<ImageFileItem> Items { get; } = new();
+
+        public bool IsDarkMode
+        {
+            get => _isDarkMode;
+            set
+            {
+                if (SetProperty(ref _isDarkMode, value))
+                {
+                    ZeroUI.Wpf.Theme.ZeroWpfTheme.SetTheme(value);
+                    ShowOsd(value ? "🌙 Obsidian Dark Theme" : "☀️ Clean Light Theme");
+                }
+            }
+        }
+
+        public bool IsVietnamese
+        {
+            get => _isVietnamese;
+            set
+            {
+                if (SetProperty(ref _isVietnamese, value))
+                {
+                    ZeroUI.Core.Localization.LocalizationManager.SetLanguage(value ? "vi-VN" : "en-US");
+                    ShowOsd(value ? "🇻🇳 Tiếng Việt" : "🇺🇸 English");
+                    OnPropertyChanged(nameof(TitleText));
+                }
+            }
+        }
 
         public BitmapSource? CurrentImageSource
         {
@@ -296,6 +327,9 @@ namespace ZView.ViewModels
         public ICommand ToggleMeasurementCommand { get; }
         public ICommand ToggleWatermarkCommand { get; }
         public ICommand ToggleDeskewCommand { get; }
+        public ICommand ToggleThemeCommand { get; }
+        public ICommand ToggleLanguageCommand { get; }
+        public ICommand OpenSkinStudioCommand { get; }
         public ICommand CopyImageCommand { get; }
         public ICommand CopyPathCommand { get; }
         public ICommand DeleteFileCommand { get; }
@@ -331,6 +365,22 @@ namespace ZView.ViewModels
             ToggleMeasurementCommand = new RelayCommand(() => IsMeasurementMode = !IsMeasurementMode);
             ToggleWatermarkCommand = new RelayCommand(() => IsWatermarkMode = !IsWatermarkMode);
             ToggleDeskewCommand = new RelayCommand(() => IsDeskewMode = !IsDeskewMode);
+
+            ToggleThemeCommand = new RelayCommand(() => IsDarkMode = !IsDarkMode);
+            ToggleLanguageCommand = new RelayCommand(() => IsVietnamese = !IsVietnamese);
+            OpenSkinStudioCommand = new RelayCommand(() =>
+            {
+                try
+                {
+                    var dlg = new ZeroUI.Wpf.Theme.SkinStudioDialog();
+                    dlg.Owner = Application.Current?.MainWindow;
+                    dlg.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    ShowOsd($"Skin Studio Error: {ex.Message}");
+                }
+            });
 
             CopyImageCommand = new RelayCommand(CopyImageToClipboard, () => CurrentImageSource != null);
             CopyPathCommand = new RelayCommand(CopyPathToClipboard, () => CurrentItem != null);

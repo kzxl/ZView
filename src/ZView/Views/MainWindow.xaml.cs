@@ -224,8 +224,16 @@ namespace ZView.Views
                     _vm.ToggleMetadataCommand.Execute(null);
                     e.Handled = true;
                     break;
-                case Key.T:
+                case Key.B:
                     _vm.ToggleFilmstripCommand.Execute(null);
+                    e.Handled = true;
+                    break;
+                case Key.T:
+                    _vm.ToggleThemeCommand.Execute(null);
+                    e.Handled = true;
+                    break;
+                case Key.L:
+                    _vm.ToggleLanguageCommand.Execute(null);
                     e.Handled = true;
                     break;
                 case Key.Delete:

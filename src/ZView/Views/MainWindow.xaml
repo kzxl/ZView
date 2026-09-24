@@ -3,15 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:zui="clr-namespace:ZeroUI.Wpf.Editors;assembly=ZeroUI.Wpf.Editors"
+        xmlns:zuib="clr-namespace:ZeroUI.Wpf.Editors;assembly=ZeroUI.Wpf.Common"
+        xmlns:loc="clr-namespace:ZeroUI.Wpf.Localization;assembly=ZeroUI.Wpf.Common"
         xmlns:media="clr-namespace:ZeroUI.Wpf.Media;assembly=ZeroUI.Wpf.Media"
         xmlns:converters="clr-namespace:ZView.Converters"
         mc:Ignorable="d"
-        Title="{Binding TitleText}"
-        Height="820" Width="1300"
-        MinHeight="500" MinWidth="750"
+        Title="{loc:Loc Key=ZView.Title, Default='ZView — Enterprise Image Workstation'}"
+        Height="840" Width="1320"
+        MinHeight="500" MinWidth="780"
         WindowStartupLocation="CenterScreen"
-        Background="#11131F"
-        Foreground="#F1F5F9"
+        Background="{DynamicResource ZeroUI.BgPrimary}"
+        Foreground="{DynamicResource ZeroUI.TextPrimary}"
         AllowDrop="True"
         Drop="Window_Drop"
         DragOver="Window_DragOver"
@@ -29,19 +32,10 @@
         <converters:InverseBooleanToVisibilityConverter x:Key="InvBoolToVis"/>
         <converters:NullToVisibilityConverter x:Key="NullToVis"/>
 
-        <!-- Design Token Brushes -->
-        <SolidColorBrush x:Key="BgDarkBrush" Color="#11131F"/>
-        <SolidColorBrush x:Key="BgCardBrush" Color="#181A28"/>
-        <SolidColorBrush x:Key="BgHoverBrush" Color="#262A44"/>
-        <SolidColorBrush x:Key="BorderDefaultBrush" Color="#2E344E"/>
-        <SolidColorBrush x:Key="PrimaryAccentBrush" Color="#818CF8"/>
-        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F1F5F9"/>
-        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#94A3B8"/>
-
-        <!-- Modern Compact Button Style -->
+        <!-- Dynamic Theme Adaptive Toolbar Button Style -->
         <Style x:Key="ToolbarBtnStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="{DynamicResource ZeroUI.TextPrimary}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Padding" Value="8,4"/>
@@ -61,11 +55,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#262A44"/>
-                                <Setter TargetName="border" Property="BorderBrush" Value="#2E344E"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource ZeroUI.BgHover}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource ZeroUI.BorderDefault}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#32385C"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource ZeroUI.BgActive}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Opacity" Value="0.4"/>
@@ -78,7 +72,7 @@
 
         <Style x:Key="ToolbarToggleBtnStyle" TargetType="ToggleButton">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="{DynamicResource ZeroUI.TextPrimary}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Padding" Value="8,4"/>
@@ -98,13 +92,13 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#262A44"/>
-                                <Setter TargetName="border" Property="BorderBrush" Value="#2E344E"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource ZeroUI.BgHover}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource ZeroUI.BorderDefault}"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#2A3056"/>
-                                <Setter TargetName="border" Property="BorderBrush" Value="#818CF8"/>
-                                <Setter Property="Foreground" Value="#818CF8"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource ZeroUI.SelectionBackground}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ZeroUI.PrimaryAccent}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -116,7 +110,7 @@
         <Style x:Key="CaptionBtnStyle" TargetType="Button">
             <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="Foreground" Value="{DynamicResource ZeroUI.TextSecondary}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Width" Value="42"/>
             <Setter Property="Height" Value="34"/>
@@ -130,11 +124,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bg" Property="Background" Value="#262A44"/>
-                                <Setter Property="Foreground" Value="#F1F5F9"/>
+                                <Setter TargetName="bg" Property="Background" Value="{DynamicResource ZeroUI.BgHover}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ZeroUI.TextPrimary}"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="bg" Property="Background" Value="#32385C"/>
+                                <Setter TargetName="bg" Property="Background" Value="{DynamicResource ZeroUI.BgActive}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -164,7 +158,7 @@
         </Style>
     </Window.Resources>
 
-    <Grid Background="#11131F">
+    <Grid Background="{DynamicResource ZeroUI.BgPrimary}">
         <Grid.RowDefinitions>
             <!-- Row 0: Fluent Extended Custom TitleBar -->
             <RowDefinition Height="38"/>
@@ -181,10 +175,61 @@
         </Grid.RowDefinitions>
 
         <!-- ================= ROW 0: EXTENDED TITLEBAR ================= -->
-        <Border Grid.Row="0" Background="#141724" BorderBrush="#23273C" BorderThickness="0,0,0,1">
+        <Border Grid.Row="0"
+                Background="{DynamicResource ZeroUI.BgCard}"
+                BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
+                BorderThickness="0,0,0,1">
             <DockPanel LastChildFill="True">
                 <!-- Caption Buttons (Right-aligned) -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <!-- Language Switcher Quick Pill -->
+                    <Button Style="{StaticResource CaptionBtnStyle}"
+                            WindowChrome.IsHitTestVisibleInChrome="True"
+                            Command="{Binding ToggleLanguageCommand}"
+                            ToolTip="{loc:Loc Key=ZView.Nav.Language, Default='Chuyển ngôn ngữ / Language'}">
+                        <TextBlock Text="{Binding IsVietnamese, Converter={x:Null}}" FontWeight="Bold" FontSize="11">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="🇻🇳 VI"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsVietnamese}" Value="False">
+                                            <Setter Property="Text" Value="🇺🇸 EN"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Button>
+
+                    <!-- Theme Switcher Quick Pill (Light / Dark) -->
+                    <Button Style="{StaticResource CaptionBtnStyle}"
+                            WindowChrome.IsHitTestVisibleInChrome="True"
+                            Command="{Binding ToggleThemeCommand}"
+                            ToolTip="{loc:Loc Key=ZView.Nav.Theme, Default='Chuyển giao diện (Sáng / Tối)'}">
+                        <TextBlock FontSize="12">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="☀️"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDarkMode}" Value="True">
+                                            <Setter Property="Text" Value="🌙"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Button>
+
+                    <!-- Skin Studio Palette -->
+                    <Button Style="{StaticResource CaptionBtnStyle}"
+                            WindowChrome.IsHitTestVisibleInChrome="True"
+                            Command="{Binding OpenSkinStudioCommand}"
+                            ToolTip="{loc:Loc Key=ZView.Nav.SkinStudio, Default='Bảng màu Skin Studio'}">
+                        <TextBlock Text="🎨" FontSize="11"/>
+                    </Button>
+
+                    <Rectangle Width="1" Height="16" Fill="{DynamicResource ZeroUI.BorderSubtle}" Margin="2,0"/>
+
                     <Button Style="{StaticResource CaptionBtnStyle}" Click="BtnMinimize_Click" ToolTip="Minimize">
                         <TextBlock Text="─" FontSize="11" Margin="0,0,0,2"/>
                     </Button>
@@ -196,20 +241,20 @@
                     </Button>
                 </StackPanel>
 
-                <!-- Left: Branding & Quick Action Pills -->
+                <!-- Left: Branding & Dynamic Title -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
-                    <Border Background="#252A42" CornerRadius="4" Padding="6,2" Margin="0,0,10,0">
-                        <TextBlock Text="ZVIEW" Foreground="#818CF8" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
+                    <Border Background="{DynamicResource ZeroUI.PrimaryAccent}" CornerRadius="4" Padding="6,2" Margin="0,0,10,0">
+                        <TextBlock Text="{loc:Loc Key=ZView.Brand, Default='ZVIEW'}" Foreground="White" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
                     </Border>
-                    <TextBlock Text="{Binding TitleText}" Foreground="#94A3B8" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="600"/>
+                    <TextBlock Text="{Binding TitleText}" Foreground="{DynamicResource ZeroUI.TextSecondary}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="620"/>
                 </StackPanel>
             </DockPanel>
         </Border>
 
         <!-- ================= ROW 1: PRIMARY QUICK ACTIONS TOOLBAR ================= -->
         <Border Grid.Row="1"
-                Background="#181A28"
-                BorderBrush="#2E344E"
+                Background="{DynamicResource ZeroUI.BgCard}"
+                BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
                 BorderThickness="0,0,0,1"
                 Padding="8,4"
                 Visibility="{Binding IsFullScreen, Converter={StaticResource InvBoolToVis}}">
@@ -217,30 +262,36 @@
                 <!-- Left Section: Files, Navigation, Transformations -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
                     <!-- File Operations -->
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding OpenFileCommand}" ToolTip="Open Image File (Ctrl+O)">
-                        <TextBlock Text="📁 Open"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding OpenFileCommand}" ToolTip="{loc:Loc Key=ZView.Nav.Open, Default='Mở tệp ảnh (Ctrl+O)'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📁 "/>
+                            <TextBlock Text="{loc:Loc Key=Common.Open, Default='Mở'}"/>
+                        </StackPanel>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding OpenFolderCommand}" ToolTip="Open Folder (Ctrl+Shift+O)">
-                        <TextBlock Text="📂 Folder"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding OpenFolderCommand}" ToolTip="{loc:Loc Key=ZView.Nav.OpenFolder, Default='Mở thư mục ảnh (Ctrl+Shift+O)'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📂 "/>
+                            <TextBlock Text="{loc:Loc Key=ZView.Nav.OpenFolder, Default='Thư mục'}"/>
+                        </StackPanel>
                     </Button>
 
-                    <Rectangle Width="1" Height="18" Fill="#2E344E" Margin="6,0"/>
+                    <Rectangle Width="1" Height="18" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="6,0"/>
 
                     <!-- Navigation -->
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding PreviousCommand}" ToolTip="Previous Image (Left / Backspace)">
-                        <TextBlock Text="◀ Prev"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding PreviousCommand}" ToolTip="{loc:Loc Key=ZView.Nav.Prev, Default='Ảnh trước'}">
+                        <TextBlock Text="◀"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding NextCommand}" ToolTip="Next Image (Right / Space)">
-                        <TextBlock Text="Next ▶"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding NextCommand}" ToolTip="{loc:Loc Key=ZView.Nav.Next, Default='Ảnh sau'}">
+                        <TextBlock Text="▶"/>
                     </Button>
 
-                    <Rectangle Width="1" Height="18" Fill="#2E344E" Margin="6,0"/>
+                    <Rectangle Width="1" Height="18" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="6,0"/>
 
                     <!-- View Transformations -->
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnFitToWindow_Click" ToolTip="Fit Image to Window (Ctrl+0)">
-                        <TextBlock Text="⤢ Fit"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnFitToWindow_Click" ToolTip="{loc:Loc Key=ZView.Nav.Fit, Default='Vừa khung (F)'}">
+                        <TextBlock Text="⤢"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnActualSize_Click" ToolTip="Actual 100% Size (Ctrl+1)">
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnActualSize_Click" ToolTip="{loc:Loc Key=ZView.Nav.ActualSize, Default='Kích thước gốc 100% (1)'}">
                         <TextBlock Text="1:1"/>
                     </Button>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnZoomIn_Click" ToolTip="Zoom In (+)">
@@ -249,60 +300,72 @@
                     <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnZoomOut_Click" ToolTip="Zoom Out (-)">
                         <TextBlock Text="🔍-"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnRotateCW_Click" ToolTip="Rotate 90° CW (Ctrl+R)">
-                        <TextBlock Text="↻ Rotate"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnRotateCW_Click" ToolTip="{loc:Loc Key=ZView.Nav.RotateRight, Default='Xoay phải 90° (R)'}">
+                        <TextBlock Text="↻"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnFlipH_Click" ToolTip="Flip Horizontal (Ctrl+H)">
-                        <TextBlock Text="⇄ Flip"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnFlipH_Click" ToolTip="{loc:Loc Key=ZView.Nav.FlipH, Default='Lật ngang (H)'}">
+                        <TextBlock Text="⇄"/>
                     </Button>
                 </StackPanel>
 
                 <!-- Right Section: Interactive Modes, HUD Toggles & Window -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
                     <!-- Zoom badge -->
-                    <Border Background="#1D2034" CornerRadius="4" Padding="8,2" Margin="0,0,6,0" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding ZoomPercentageText}" Foreground="#818CF8" FontSize="11" FontWeight="SemiBold"/>
+                    <Border Background="{DynamicResource ZeroUI.BgInput}" BorderBrush="{DynamicResource ZeroUI.BorderSubtle}" BorderThickness="1" CornerRadius="4" Padding="8,2" Margin="0,0,6,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding ZoomPercentageText}" Foreground="{DynamicResource ZeroUI.PrimaryAccent}" FontSize="11" FontWeight="SemiBold"/>
                     </Border>
 
-                    <Rectangle Width="1" Height="18" Fill="#2E344E" Margin="4,0"/>
+                    <Rectangle Width="1" Height="18" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="4,0"/>
 
                     <!-- Specialized Interactive Modes -->
-                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsAnnotationMode}" ToolTip="Annotation &amp; QC Defect Markup Mode (A)">
-                        <TextBlock Text="✏️ Annotate"/>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsAnnotationMode}" ToolTip="{loc:Loc Key=ZView.Mode.Annotate, Default='Ghi chú (A)'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="✏️ "/>
+                            <TextBlock Text="{loc:Loc Key=ZView.Mode.Annotate, Default='Ghi chú'}"/>
+                        </StackPanel>
                     </ToggleButton>
-                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsMeasurementMode}" ToolTip="Precision Optical Caliper &amp; Measurement (M)">
-                        <TextBlock Text="📐 Measure"/>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsMeasurementMode}" ToolTip="{loc:Loc Key=ZView.Mode.Measure, Default='Thước Caliper (M)'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📐 "/>
+                            <TextBlock Text="{loc:Loc Key=ZView.Mode.Measure, Default='Thước đo'}"/>
+                        </StackPanel>
                     </ToggleButton>
-                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsWatermarkMode}" ToolTip="Security Watermark Overlay (W)">
-                        <TextBlock Text="🏷️ Watermark"/>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsWatermarkMode}" ToolTip="{loc:Loc Key=ZView.Mode.Watermark, Default='Thủy ấn bảo mật (W)'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🏷️ "/>
+                            <TextBlock Text="{loc:Loc Key=ZView.Mode.Watermark, Default='Thủy ấn'}"/>
+                        </StackPanel>
                     </ToggleButton>
-                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsDeskewMode}" ToolTip="Document Deskew &amp; OCR Preprocessing (D)">
-                        <TextBlock Text="📄 Deskew"/>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsDeskewMode}" ToolTip="{loc:Loc Key=ZView.Mode.Deskew, Default='Cân góc &amp; OCR (D)'}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📄 "/>
+                            <TextBlock Text="{loc:Loc Key=ZView.Mode.Deskew, Default='Cân góc'}"/>
+                        </StackPanel>
                     </ToggleButton>
 
-                    <Rectangle Width="1" Height="18" Fill="#2E344E" Margin="6,0"/>
+                    <Rectangle Width="1" Height="18" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="6,0"/>
 
                     <!-- HUD Toggles -->
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsMiniMapEnabled}" ToolTip="MiniMap Navigator Radar">
-                        <TextBlock Text="🗺️ Map"/>
+                        <TextBlock Text="🗺️"/>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsPixelGridEnabled}" ToolTip="Forensic Pixel Grid">
-                        <TextBlock Text="▦ Grid"/>
+                        <TextBlock Text="▦"/>
                     </ToggleButton>
-                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsFilmstripVisible}" ToolTip="Toggle Filmstrip (T)">
-                        <TextBlock Text="🎞️ Strip"/>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsFilmstripVisible}" ToolTip="{loc:Loc Key=ZView.Nav.Filmstrip, Default='Dải phim (B)'}">
+                        <TextBlock Text="🎞️"/>
                     </ToggleButton>
 
-                    <Rectangle Width="1" Height="18" Fill="#2E344E" Margin="6,0"/>
+                    <Rectangle Width="1" Height="18" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="6,0"/>
 
                     <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding CopyImageCommand}" ToolTip="Copy Image (Ctrl+C)">
-                        <TextBlock Text="📋 Copy"/>
+                        <TextBlock Text="📋"/>
                     </Button>
-                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsMetadataDrawerOpen}" ToolTip="EXIF Metadata Drawer (I / Alt+Enter)">
-                        <TextBlock Text="ℹ️ Info"/>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsMetadataDrawerOpen}" ToolTip="{loc:Loc Key=ZView.Nav.Info, Default='Thông số EXIF (I)'}">
+                        <TextBlock Text="ℹ️"/>
                     </ToggleButton>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding ToggleFullScreenCommand}" ToolTip="Fullscreen Mode (F11)">
-                        <TextBlock Text="⛶ Full"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding ToggleFullScreenCommand}" ToolTip="{loc:Loc Key=ZView.Nav.Fullscreen, Default='Toàn màn hình (F11)'}">
+                        <TextBlock Text="⛶"/>
                     </Button>
                 </StackPanel>
             </DockPanel>
@@ -310,68 +373,76 @@
 
         <!-- ================= ROW 2: CONTEXTUAL SUB-TOOLBARS ================= -->
         <!-- 1. Annotation Sub-Bar -->
-        <Border Grid.Row="2" Background="#1F2438" BorderBrush="#2E344E" BorderThickness="0,0,0,1" Padding="12,4"
+        <Border Grid.Row="2"
+                Background="{DynamicResource ZeroUI.BgInput}"
+                BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
+                BorderThickness="0,0,0,1"
+                Padding="12,4"
                 Visibility="{Binding IsAnnotationMode, Converter={StaticResource BoolToVis}}">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <TextBlock Text="ANNOTATION TOOL:" FontSize="10" FontWeight="Bold" Foreground="#818CF8" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetToolBox_Click" ToolTip="Bounding Box">
+                    <TextBlock Text="{loc:Loc Key=ZView.Annotate.Title, Default='CHẾ ĐỘ GHI CHÚ:'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetToolBox_Click" ToolTip="{loc:Loc Key=ZView.Annotate.Box, Default='Khung chữ nhật'}">
                         <TextBlock Text="🔲 Box"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetToolArrow_Click" ToolTip="Defect Arrow">
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetToolArrow_Click" ToolTip="{loc:Loc Key=ZView.Annotate.Arrow, Default='Mũi tên'}">
                         <TextBlock Text="↗ Arrow"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetToolEllipse_Click" ToolTip="Ellipse Zone">
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetToolEllipse_Click" ToolTip="{loc:Loc Key=ZView.Annotate.Ellipse, Default='Hình Elip'}">
                         <TextBlock Text="⭕ Ellipse"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetToolCallout_Click" ToolTip="Text Callout">
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetToolCallout_Click" ToolTip="{loc:Loc Key=ZView.Annotate.Callout, Default='Chú giải'}">
                         <TextBlock Text="💬 Callout"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetToolBlur_Click" ToolTip="Mask Sensitive Region">
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetToolBlur_Click" ToolTip="{loc:Loc Key=ZView.Annotate.Mask, Default='Mặt nạ che mờ'}">
                         <TextBlock Text="🔒 Blur"/>
                     </Button>
 
-                    <Rectangle Width="1" Height="16" Fill="#2E344E" Margin="8,0"/>
+                    <Rectangle Width="1" Height="16" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="8,0"/>
 
-                    <TextBlock Text="SEVERITY:" FontSize="10" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetSeverityOk_Click" Foreground="#A6E3A1">
-                        <TextBlock Text="● OK"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Annotate.SeverityLabel, Default='MỨC ĐỘ:'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetSeverityOk_Click" Foreground="{DynamicResource ZeroUI.Success}">
+                        <TextBlock Text="{loc:Loc Key=ZView.Annotate.Severity.Info, Default='● OK / Info'}"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetSeverityWarning_Click" Foreground="#F9E2AF">
-                        <TextBlock Text="● Warning"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetSeverityWarning_Click" Foreground="{DynamicResource ZeroUI.Warning}">
+                        <TextBlock Text="{loc:Loc Key=ZView.Annotate.Severity.Minor, Default='● Warning'}"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetSeverityDefect_Click" Foreground="#F38BA8">
-                        <TextBlock Text="● Defect"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetSeverityDefect_Click" Foreground="{DynamicResource ZeroUI.Danger}">
+                        <TextBlock Text="{loc:Loc Key=ZView.Annotate.Severity.Major, Default='● Defect'}"/>
                     </Button>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSetSeverityCritical_Click" Foreground="#EB4D4B">
-                        <TextBlock Text="● Critical"/>
+                        <TextBlock Text="{loc:Loc Key=ZView.Annotate.Severity.Critical, Default='● Critical'}"/>
                     </Button>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSaveAnnotatedImage_Click" Background="#818CF8" Foreground="#11131F" FontWeight="Bold" Padding="12,2">
-                        <TextBlock Text="💾 Export Annotated Image"/>
-                    </Button>
+                    <zuib:ZButton Variant="Primary" Click="BtnSaveAnnotatedImage_Click" Height="26" Padding="12,2">
+                        <TextBlock Text="{loc:Loc Key=ZView.Annotate.Export, Default='💾 Xuất ảnh ghi chú...'}"/>
+                    </zuib:ZButton>
                 </StackPanel>
             </DockPanel>
         </Border>
 
         <!-- 2. Measurement Sub-Bar -->
-        <Border Grid.Row="2" Background="#1F2438" BorderBrush="#2E344E" BorderThickness="0,0,0,1" Padding="12,4"
+        <Border Grid.Row="2"
+                Background="{DynamicResource ZeroUI.BgInput}"
+                BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
+                BorderThickness="0,0,0,1"
+                Padding="12,4"
                 Visibility="{Binding IsMeasurementMode, Converter={StaticResource BoolToVis}}">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <TextBlock Text="CALIPER MODE:" FontSize="10" FontWeight="Bold" Foreground="#00E5FF" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnMeasureLinear_Click" ToolTip="2-Point Distance Caliper">
+                    <TextBlock Text="{loc:Loc Key=ZView.Measure.Title, Default='THƯỚC ĐO QUANG HỌC:'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.InfoAccent}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnMeasureLinear_Click" ToolTip="{loc:Loc Key=ZView.Measure.Linear, Default='Khoảng cách (2 điểm)'}">
                         <TextBlock Text="📏 Distance"/>
                     </Button>
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnMeasureAngle_Click" ToolTip="3-Point Angle Gauge">
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnMeasureAngle_Click" ToolTip="{loc:Loc Key=ZView.Measure.Angle, Default='Đo góc (3 điểm)'}">
                         <TextBlock Text="∠ Angle"/>
                     </Button>
 
-                    <Rectangle Width="1" Height="16" Fill="#2E344E" Margin="8,0"/>
+                    <Rectangle Width="1" Height="16" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="8,0"/>
 
-                    <TextBlock Text="UNIT:" FontSize="10" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Measure.Unit, Default='ĐƠN VỊ:'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" VerticalAlignment="Center" Margin="0,0,6,0"/>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnUnitMm_Click">
                         <TextBlock Text="mm"/>
                     </Button>
@@ -382,59 +453,64 @@
                         <TextBlock Text="px"/>
                     </Button>
 
-                    <Rectangle Width="1" Height="16" Fill="#2E344E" Margin="8,0"/>
+                    <Rectangle Width="1" Height="16" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="8,0"/>
 
-                    <TextBlock Text="CALIBRATION (mm/px):" FontSize="10" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                    <TextBox Text="{Binding CalibrationFactor, UpdateSourceTrigger=PropertyChanged}" Width="50" Height="22" Background="#141724" Foreground="#00E5FF" BorderBrush="#2E344E" FontSize="11" Padding="4,1" VerticalContentAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                    <TextBlock Text="Drag cyan caliper handles on image to inspect dimension" FontSize="11" Foreground="#64748B" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Measure.Calib, Default='CALIB:'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                    <TextBox Text="{Binding CalibrationFactor, UpdateSourceTrigger=PropertyChanged}" Width="56" Height="22" Background="{DynamicResource ZeroUI.BgCard}" Foreground="{DynamicResource ZeroUI.TextPrimary}" BorderBrush="{DynamicResource ZeroUI.BorderDefault}" FontSize="11" Padding="4,1" VerticalContentAlignment="Center"/>
                 </StackPanel>
             </DockPanel>
         </Border>
 
         <!-- 3. Watermark Sub-Bar -->
-        <Border Grid.Row="2" Background="#1F2438" BorderBrush="#2E344E" BorderThickness="0,0,0,1" Padding="12,4"
+        <Border Grid.Row="2"
+                Background="{DynamicResource ZeroUI.BgInput}"
+                BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
+                BorderThickness="0,0,0,1"
+                Padding="12,4"
                 Visibility="{Binding IsWatermarkMode, Converter={StaticResource BoolToVis}}">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <TextBlock Text="STAMP TEXT:" FontSize="10" FontWeight="Bold" Foreground="#F9E2AF" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                    <TextBox Text="{Binding WatermarkText, UpdateSourceTrigger=PropertyChanged}" Width="260" Height="22" Background="#141724" Foreground="#F1F5F9" BorderBrush="#2E344E" FontSize="11" Padding="4,1" VerticalContentAlignment="Center"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Watermark.TextLabel, Default='NỘI DUNG:'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.Warning}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBox Text="{Binding WatermarkText, UpdateSourceTrigger=PropertyChanged}" Width="260" Height="22" Background="{DynamicResource ZeroUI.BgCard}" Foreground="{DynamicResource ZeroUI.TextPrimary}" BorderBrush="{DynamicResource ZeroUI.BorderDefault}" FontSize="11" Padding="4,1" VerticalContentAlignment="Center"/>
 
-                    <Rectangle Width="1" Height="16" Fill="#2E344E" Margin="8,0"/>
+                    <Rectangle Width="1" Height="16" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="8,0"/>
 
-                    <TextBlock Text="OPACITY:" FontSize="10" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Watermark.Opacity, Default='ĐỘ MỜ:'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" VerticalAlignment="Center" Margin="0,0,4,0"/>
                     <Slider Value="{Binding WatermarkOpacity}" Minimum="0.05" Maximum="1.0" SmallChange="0.05" Width="80" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnSaveWatermarkedImage_Click" Background="#F9E2AF" Foreground="#11131F" FontWeight="Bold" Padding="12,2">
-                        <TextBlock Text="💾 Export Watermarked Image"/>
-                    </Button>
+                    <zuib:ZButton Variant="Success" Click="BtnSaveWatermarkedImage_Click" Height="26" Padding="12,2">
+                        <TextBlock Text="{loc:Loc Key=ZView.Watermark.Export, Default='💾 Xuất ảnh đóng dấu...'}"/>
+                    </zuib:ZButton>
                 </StackPanel>
             </DockPanel>
         </Border>
 
         <!-- 4. Deskew Sub-Bar -->
-        <Border Grid.Row="2" Background="#1F2438" BorderBrush="#2E344E" BorderThickness="0,0,0,1" Padding="12,4"
+        <Border Grid.Row="2"
+                Background="{DynamicResource ZeroUI.BgInput}"
+                BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
+                BorderThickness="0,0,0,1"
+                Padding="12,4"
                 Visibility="{Binding IsDeskewMode, Converter={StaticResource BoolToVis}}">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <TextBlock Text="DESKEW ROTATION:" FontSize="10" FontWeight="Bold" Foreground="#A6E3A1" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Deskew.Angle, Default='GÓC XOAY:'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.Success}" VerticalAlignment="Center" Margin="0,0,6,0"/>
                     <Slider Value="{Binding DeskewAngle}" Minimum="-45.0" Maximum="45.0" Width="140" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding DeskewAngle, StringFormat='{}{0:F1}°'}" Foreground="#A6E3A1" FontWeight="Bold" FontSize="11" Width="42" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding DeskewAngle, StringFormat='{}{0:F1}°'}" Foreground="{DynamicResource ZeroUI.Success}" FontWeight="Bold" FontSize="11" Width="42" Margin="6,0,0,0" VerticalAlignment="Center"/>
 
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnResetDeskew_Click" ToolTip="Reset Angle to 0°">
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnResetDeskew_Click" ToolTip="{loc:Loc Key=ZView.Deskew.Reset, Default='Đặt lại 0°'}">
                         <TextBlock Text="↺ Reset"/>
                     </Button>
 
-                    <Rectangle Width="1" Height="16" Fill="#2E344E" Margin="8,0"/>
+                    <Rectangle Width="1" Height="16" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="8,0"/>
 
-                    <CheckBox IsChecked="{Binding IsBinarizationEnabled}" Content="OCR Binarize Preview" Foreground="#F1F5F9" FontSize="11" VerticalAlignment="Center"/>
+                    <CheckBox IsChecked="{Binding IsBinarizationEnabled}" Content="{loc:Loc Key=ZView.Deskew.Binarize, Default='Xem trước nhị phân OCR'}" Foreground="{DynamicResource ZeroUI.TextPrimary}" FontSize="11" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnExportDeskewedImage_Click" Background="#A6E3A1" Foreground="#11131F" FontWeight="Bold" Padding="12,2">
-                        <TextBlock Text="💾 Export Clean Document"/>
-                    </Button>
+                    <zuib:ZButton Variant="Primary" Click="BtnExportDeskewedImage_Click" Height="26" Padding="12,2">
+                        <TextBlock Text="{loc:Loc Key=ZView.Deskew.Export, Default='💾 Xuất ảnh thẳng góc...'}"/>
+                    </zuib:ZButton>
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -480,46 +556,47 @@
                                    Visibility="{Binding IsDeskewMode, Converter={StaticResource BoolToVis}}"/>
 
             <!-- Placeholder Welcome Screen if No Image Loaded -->
-            <Border Background="#11131F"
+            <Border Background="{DynamicResource ZeroUI.BgPrimary}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Padding="36"
                     CornerRadius="12"
-                    BorderBrush="#2E344E"
+                    BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
                     BorderThickness="1"
                     Visibility="{Binding CurrentImageSource, Converter={StaticResource InvBoolToVis}}">
                 <StackPanel HorizontalAlignment="Center" MaxWidth="480">
                     <TextBlock Text="🖼️" FontSize="56" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-                    <TextBlock Text="Zero Universe — ZView" FontSize="22" FontWeight="Bold" Foreground="#F1F5F9" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                    <TextBlock Text="High-performance GPU-accelerated image workstation and inspection studio." FontSize="13" Foreground="#94A3B8" HorizontalAlignment="Center" Margin="0,0,0,24"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Title, Default='Zero Universe — ZView'}" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextPrimary}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Empty.DragDrop, Default='Kéo thả ảnh hoặc thư mục vào đây để duyệt'}" FontSize="13" Foreground="{DynamicResource ZeroUI.TextSecondary}" HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,16">
-                        <Button Style="{StaticResource ToolbarBtnStyle}"
-                                Command="{Binding OpenFileCommand}"
-                                Background="#818CF8" Foreground="#11131F"
-                                FontWeight="Bold" Height="36" Padding="18,6" Margin="0,0,10,0">
-                            <TextBlock Text="📁 Open Image File"/>
-                        </Button>
-                        <Button Style="{StaticResource ToolbarBtnStyle}"
-                                Command="{Binding OpenFolderCommand}"
-                                Height="36" Padding="16,6">
-                            <TextBlock Text="📂 Open Folder"/>
-                        </Button>
+                        <zuib:ZButton Variant="Primary"
+                                     Command="{Binding OpenFileCommand}"
+                                     Height="36" Padding="18,6" Margin="0,0,10,0">
+                            <TextBlock Text="{loc:Loc Key=ZView.Empty.BrowseButton, Default='📁 Mở tệp ảnh...'}"/>
+                        </zuib:ZButton>
+                        <zuib:ZButton Variant="Secondary"
+                                     Command="{Binding OpenFolderCommand}"
+                                     Height="36" Padding="16,6">
+                            <TextBlock Text="{loc:Loc Key=ZView.Nav.OpenFolder, Default='📂 Mở thư mục'}"/>
+                        </zuib:ZButton>
                     </StackPanel>
 
-                    <TextBlock Text="Drag &amp; drop any image, document or folder to open instantly" FontSize="11" Foreground="#64748B" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Empty.SupportedFormats, Default='Hỗ trợ chuẩn 30+ định dạng: PNG, JPG, WEBP, AVIF, HEIC, TIFF, BMP, ICO, TGA, PSD, SVG, RAW/DNG...'}" FontSize="11" Foreground="{DynamicResource ZeroUI.TextMuted}" TextWrapping="Wrap" TextAlignment="Center"/>
                 </StackPanel>
             </Border>
 
             <!-- Loading Spinner Indicator -->
-            <Border Background="#CC11131F"
+            <Border Background="{DynamicResource ZeroUI.BgCard}"
+                    BorderBrush="{DynamicResource ZeroUI.PrimaryAccent}"
+                    BorderThickness="1"
                     CornerRadius="8"
                     Padding="16,10"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="⚡ Loading image..." Foreground="#818CF8" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Status.Loading, Default='⚡ Đang tải ảnh...'}" Foreground="{DynamicResource ZeroUI.PrimaryAccent}" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
                 </StackPanel>
             </Border>
 
@@ -527,21 +604,21 @@
             <Border HorizontalAlignment="Center"
                     VerticalAlignment="Top"
                     Margin="0,20,0,0"
-                    Background="#E6181A28"
-                    BorderBrush="#80818CF8"
+                    Background="{DynamicResource ZeroUI.BgCard}"
+                    BorderBrush="{DynamicResource ZeroUI.PrimaryAccent}"
                     BorderThickness="1"
                     CornerRadius="20"
                     Padding="16,6"
                     Visibility="{Binding IsOsdVisible, Converter={StaticResource BoolToVis}}">
-                <TextBlock Text="{Binding OsdText}" Foreground="#F1F5F9" FontSize="12" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding OsdText}" Foreground="{DynamicResource ZeroUI.TextPrimary}" FontSize="12" FontWeight="SemiBold"/>
             </Border>
 
             <!-- Right Slide-In EXIF & Telemetry Drawer -->
             <Border HorizontalAlignment="Right"
                     VerticalAlignment="Stretch"
                     Width="330"
-                    Background="#F2181A28"
-                    BorderBrush="#2E344E"
+                    Background="{DynamicResource ZeroUI.BgCard}"
+                    BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
                     BorderThickness="1,0,0,0"
                     Visibility="{Binding IsMetadataDrawerOpen, Converter={StaticResource BoolToVis}}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -549,22 +626,22 @@
                         <!-- Drawer Header -->
                         <DockPanel LastChildFill="True" Margin="0,0,0,16">
                             <Button DockPanel.Dock="Right" Style="{StaticResource ToolbarBtnStyle}" Command="{Binding ToggleMetadataCommand}" Content="✕" Width="26" Height="26"/>
-                            <TextBlock Text="EXIF &amp; METADATA" FontWeight="Bold" FontSize="13" Foreground="#818CF8" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Loc Key=ZView.Drawer.Title, Default='SIÊU DỮ LIỆU &amp; EXIF'}" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource ZeroUI.PrimaryAccent}" VerticalAlignment="Center"/>
                         </DockPanel>
 
                         <!-- File Section -->
-                        <TextBlock Text="FILE ATTRIBUTES" FontSize="10" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
-                        <Border Background="#1D2034" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                        <TextBlock Text="{loc:Loc Key=ZView.Drawer.BasicInfo, Default='THÔNG TIN TỆP CƠ BẢN'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" Margin="0,0,0,8"/>
+                        <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="6" Padding="12" Margin="0,0,0,14">
                             <StackPanel>
-                                <TextBlock Text="{Binding CurrentMetadata.FileName}" FontWeight="SemiBold" Foreground="#F1F5F9" TextWrapping="Wrap" Margin="0,0,0,4"/>
-                                <TextBlock Text="{Binding CurrentMetadata.FileSizeFormatted}" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,4"/>
-                                <TextBlock Text="{Binding CurrentMetadata.FilePath}" FontSize="10" Foreground="#64748B" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding CurrentMetadata.FileName}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.TextPrimary}" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock Text="{Binding CurrentMetadata.FileSizeFormatted}" FontSize="11" Foreground="{DynamicResource ZeroUI.TextSecondary}" Margin="0,0,0,4"/>
+                                <TextBlock Text="{Binding CurrentMetadata.FilePath}" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}" TextWrapping="Wrap"/>
                             </StackPanel>
                         </Border>
 
                         <!-- Image Dimensions Section -->
-                        <TextBlock Text="IMAGE TELEMETRY" FontSize="10" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
-                        <Border Background="#1D2034" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                        <TextBlock Text="{loc:Loc Key=ZView.Status.Dimensions, Default='KÍCH THƯỚC &amp; ĐỘ PHÂN GIẢI'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" Margin="0,0,0,8"/>
+                        <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="6" Padding="12" Margin="0,0,0,14">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -577,45 +654,45 @@
                                 </Grid.RowDefinitions>
 
                                 <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,8">
-                                    <TextBlock Text="Width" FontSize="10" Foreground="#64748B"/>
-                                    <TextBlock Text="{Binding CurrentMetadata.PixelWidth, StringFormat='{}{0} px'}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                    <TextBlock Text="Width" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.PixelWidth, StringFormat='{}{0} px'}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,8">
-                                    <TextBlock Text="Height" FontSize="10" Foreground="#64748B"/>
-                                    <TextBlock Text="{Binding CurrentMetadata.PixelHeight, StringFormat='{}{0} px'}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                    <TextBlock Text="Height" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.PixelHeight, StringFormat='{}{0} px'}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,8">
-                                    <TextBlock Text="Aspect Ratio" FontSize="10" Foreground="#64748B"/>
-                                    <TextBlock Text="{Binding CurrentMetadata.AspectRatio}" FontWeight="SemiBold" Foreground="#818CF8"/>
+                                    <TextBlock Text="Aspect Ratio" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.AspectRatio}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,8">
-                                    <TextBlock Text="Megapixels" FontSize="10" Foreground="#64748B"/>
-                                    <TextBlock Text="{Binding CurrentMetadata.Megapixels}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                    <TextBlock Text="Megapixels" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.Megapixels}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="2" Grid.Column="0">
-                                    <TextBlock Text="Bit Depth" FontSize="10" Foreground="#64748B"/>
-                                    <TextBlock Text="{Binding CurrentMetadata.BitsPerPixel, StringFormat='{}{0} bpp'}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                    <TextBlock Text="Bit Depth" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.BitsPerPixel, StringFormat='{}{0} bpp'}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Row="2" Grid.Column="1">
-                                    <TextBlock Text="Density" FontSize="10" Foreground="#64748B"/>
-                                    <TextBlock Text="{Binding CurrentMetadata.DpiX, StringFormat='{}{0} DPI'}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                    <TextBlock Text="Density" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.DpiX, StringFormat='{}{0} DPI'}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
 
                         <!-- Camera EXIF Section -->
-                        <TextBlock Text="CAMERA EXIF TELEMETRY" FontSize="10" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
-                        <Border Background="#1D2034" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                        <TextBlock Text="{loc:Loc Key=ZView.Drawer.ExifData, Default='THÔNG SỐ MÁY ẢNH (EXIF)'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" Margin="0,0,0,8"/>
+                        <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="6" Padding="12" Margin="0,0,0,14">
                             <StackPanel>
                                 <StackPanel Margin="0,0,0,6">
-                                    <TextBlock Text="Camera Model" FontSize="10" Foreground="#64748B"/>
-                                    <TextBlock Text="{Binding CurrentMetadata.CameraModel, FallbackValue='N/A'}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                    <TextBlock Text="{loc:Loc Key=ZView.Drawer.Camera, Default='Thiết bị:'}" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.CameraModel, FallbackValue='N/A'}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
                                 </StackPanel>
                                 <StackPanel Margin="0,0,0,6">
-                                    <TextBlock Text="Lens" FontSize="10" Foreground="#64748B"/>
-                                    <TextBlock Text="{Binding CurrentMetadata.LensModel, FallbackValue='N/A'}" FontSize="11" Foreground="#94A3B8"/>
+                                    <TextBlock Text="{loc:Loc Key=ZView.Drawer.Lens, Default='Ống kính:'}" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.LensModel, FallbackValue='N/A'}" FontSize="11" Foreground="{DynamicResource ZeroUI.TextSecondary}"/>
                                 </StackPanel>
 
                                 <Grid Margin="0,4,0,0">
@@ -625,16 +702,16 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock Text="ISO" FontSize="10" Foreground="#64748B"/>
-                                        <TextBlock Text="{Binding CurrentMetadata.Iso, FallbackValue='-'}" FontWeight="SemiBold" Foreground="#A6E3A1"/>
+                                        <TextBlock Text="ISO" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                        <TextBlock Text="{Binding CurrentMetadata.Iso, FallbackValue='-'}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.Success}"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Aperture" FontSize="10" Foreground="#64748B"/>
-                                        <TextBlock Text="{Binding CurrentMetadata.FNumber, FallbackValue='-'}" FontWeight="SemiBold" Foreground="#F9E2AF"/>
+                                        <TextBlock Text="Aperture" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                        <TextBlock Text="{Binding CurrentMetadata.FNumber, FallbackValue='-'}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.Warning}"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2">
-                                        <TextBlock Text="Shutter" FontSize="10" Foreground="#64748B"/>
-                                        <TextBlock Text="{Binding CurrentMetadata.ExposureTime, FallbackValue='-'}" FontWeight="SemiBold" Foreground="#818CF8"/>
+                                        <TextBlock Text="Shutter" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                        <TextBlock Text="{Binding CurrentMetadata.ExposureTime, FallbackValue='-'}" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
@@ -646,8 +723,8 @@
 
         <!-- ================= ROW 4: BOTTOM FILMSTRIP ================= -->
         <Border Grid.Row="4"
-                Background="#141724"
-                BorderBrush="#2E344E"
+                Background="{DynamicResource ZeroUI.BgCard}"
+                BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
                 BorderThickness="0,1,0,0"
                 Height="96"
                 Visibility="{Binding IsFilmstripVisible, Converter={StaticResource BoolToVis}}">
@@ -685,12 +762,12 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="#4F46E5"/>
-                                            <Setter TargetName="itemBorder" Property="Background" Value="#1F2438"/>
+                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ZeroUI.BgHover}"/>
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="#818CF8"/>
-                                            <Setter TargetName="itemBorder" Property="Background" Value="#252A42"/>
+                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ZeroUI.SelectionBackground}"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -701,11 +778,11 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Width="78" Height="78">
-                            <Border Background="#1D2034" CornerRadius="4">
+                            <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="4">
                                 <Image Source="{Binding Thumbnail}" Stretch="Uniform" RenderOptions.BitmapScalingMode="LowQuality"/>
                             </Border>
-                            <Border Background="#CC11131F" VerticalAlignment="Bottom" CornerRadius="0,0,4,4" Padding="4,2">
-                                <TextBlock Text="{Binding FileName}" FontSize="9" Foreground="#94A3B8" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"/>
+                            <Border Background="{DynamicResource ZeroUI.BgCard}" Opacity="0.9" VerticalAlignment="Bottom" CornerRadius="0,0,4,4" Padding="4,2">
+                                <TextBlock Text="{Binding FileName}" FontSize="9" Foreground="{DynamicResource ZeroUI.TextSecondary}" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"/>
                             </Border>
                         </Grid>
                     </DataTemplate>
@@ -715,17 +792,17 @@
 
         <!-- ================= ROW 5: BOTTOM STATUSBAR ================= -->
         <Border Grid.Row="5"
-                Background="#181A28"
-                BorderBrush="#2E344E"
+                Background="{DynamicResource ZeroUI.BgCard}"
+                BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
                 BorderThickness="0,1,0,0"
                 Padding="12,4"
                 Visibility="{Binding IsFullScreen, Converter={StaticResource InvBoolToVis}}">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                    <TextBlock Text="Shortcuts: Left/Right (Nav) · Ctrl+Scroll (Zoom) · A (Annotate) · M (Measure) · W (Watermark) · D (Deskew) · F11 (Full)"
-                               FontSize="11" Foreground="#64748B"/>
+                    <TextBlock Text="← / → (Nav) · Ctrl+Wheel (Zoom) · A (Annotate) · M (Measure) · W (Watermark) · D (Deskew) · F11 (Full)"
+                               FontSize="11" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
                 </StackPanel>
-                <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="#94A3B8" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="{DynamicResource ZeroUI.TextSecondary}" TextTrimming="CharacterEllipsis"/>
             </DockPanel>
         </Border>
     </Grid>

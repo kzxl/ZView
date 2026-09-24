@@ -13,6 +13,11 @@ namespace ZView
         {
             base.OnStartup(e);
 
+            // Initialize Localization and Theme
+            ZView.Services.ZViewLocalization.Initialize();
+            ZeroUI.Core.Localization.LocalizationManager.SetLanguage("vi-VN");
+            ZeroUI.Wpf.Theme.ZeroWpfTheme.SetTheme(false); // Default to Clean Light Theme
+
             // Composition Root
             var imageLoader = new ImageLoaderService();
             var navigation = new FolderNavigationService(imageLoader);
