@@ -1,0 +1,474 @@
+<Window x:Class="ZView.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:media="clr-namespace:ZeroUI.Wpf.Media;assembly=ZeroUI.Wpf.Media"
+        xmlns:converters="clr-namespace:ZView.Converters"
+        mc:Ignorable="d"
+        Title="{Binding TitleText}"
+        Height="780" Width="1240"
+        MinHeight="450" MinWidth="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#11131F"
+        Foreground="#F1F5F9"
+        AllowDrop="True"
+        Drop="Window_Drop"
+        DragOver="Window_DragOver"
+        KeyDown="Window_KeyDown">
+
+    <Window.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InvBoolToVis"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVis"/>
+
+        <!-- Design Token Brushes -->
+        <SolidColorBrush x:Key="BgDarkBrush" Color="#11131F"/>
+        <SolidColorBrush x:Key="BgCardBrush" Color="#181A28"/>
+        <SolidColorBrush x:Key="BgHoverBrush" Color="#262A44"/>
+        <SolidColorBrush x:Key="BorderDefaultBrush" Color="#2E344E"/>
+        <SolidColorBrush x:Key="PrimaryAccentBrush" Color="#818CF8"/>
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F1F5F9"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#94A3B8"/>
+
+        <!-- Modern Compact Button Style -->
+        <Style x:Key="ToolbarBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#F1F5F9"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#262A44"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2E344E"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#32385C"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ToolbarToggleBtnStyle" TargetType="ToggleButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#F1F5F9"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#262A44"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2E344E"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#2A3056"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#818CF8"/>
+                                <Setter Property="Foreground" Value="#818CF8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#11131F">
+        <Grid.RowDefinitions>
+            <!-- Top Unified Toolbar / Title Row -->
+            <RowDefinition Height="Auto"/>
+            <!-- Main Content Area (ImageViewer + Drawers) -->
+            <RowDefinition Height="*"/>
+            <!-- Bottom Filmstrip Thumbnail Bar -->
+            <RowDefinition Height="Auto"/>
+            <!-- Bottom Statusbar -->
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ================= TOP TOOLBAR ================= -->
+        <Border Grid.Row="0"
+                Background="#181A28"
+                BorderBrush="#2E344E"
+                BorderThickness="0,0,0,1"
+                Padding="8,4"
+                Visibility="{Binding IsFullScreen, Converter={StaticResource InvBoolToVis}}">
+            <DockPanel LastChildFill="True">
+                <!-- Left: Branding & Open Actions -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <!-- Brand Pill -->
+                    <Border Background="#252A42" CornerRadius="4" Padding="6,2" Margin="0,0,10,0">
+                        <TextBlock Text="ZVIEW" Foreground="#818CF8" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
+                    </Border>
+
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding OpenFileCommand}" ToolTip="Open Image File (Ctrl+O)">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📁 Open File" Margin="0,0,2,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding OpenFolderCommand}" ToolTip="Open Folder">
+                        <TextBlock Text="📂 Folder"/>
+                    </Button>
+
+                    <Rectangle Width="1" Height="18" Fill="#2E344E" Margin="8,0"/>
+
+                    <!-- Navigation -->
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding PreviousCommand}" ToolTip="Previous Image (Left Arrow / Backspace)">
+                        <TextBlock Text="◀ Prev"/>
+                    </Button>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding NextCommand}" ToolTip="Next Image (Right Arrow / Space)">
+                        <TextBlock Text="Next ▶"/>
+                    </Button>
+
+                    <Rectangle Width="1" Height="18" Fill="#2E344E" Margin="8,0"/>
+
+                    <!-- View Transformations -->
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnFitToWindow_Click" ToolTip="Fit Image to Window (Ctrl+0)">
+                        <TextBlock Text="⤢ Fit"/>
+                    </Button>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnActualSize_Click" ToolTip="Actual 100% Size (Ctrl+1)">
+                        <TextBlock Text="1:1"/>
+                    </Button>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnZoomIn_Click" ToolTip="Zoom In (+)">
+                        <TextBlock Text="🔍+"/>
+                    </Button>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnZoomOut_Click" ToolTip="Zoom Out (-)">
+                        <TextBlock Text="🔍-"/>
+                    </Button>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnRotateCW_Click" ToolTip="Rotate 90° Clockwise (Ctrl+R)">
+                        <TextBlock Text="↻ Rotate"/>
+                    </Button>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnFlipH_Click" ToolTip="Flip Horizontally (Ctrl+H)">
+                        <TextBlock Text="⇄ Flip"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- Right: Tool Overlays & Actions -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                    <!-- Zoom badge -->
+                    <Border Background="#1D2034" CornerRadius="4" Padding="8,2" Margin="0,0,8,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding ZoomPercentageText}" Foreground="#818CF8" FontSize="11" FontWeight="SemiBold"/>
+                    </Border>
+
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsMiniMapEnabled}" ToolTip="Radar MiniMap Navigator">
+                        <TextBlock Text="🗺 Map"/>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsColorProbeEnabled}" ToolTip="Color Probe &amp; Pixel Coordinate HUD">
+                        <TextBlock Text="🎯 Probe"/>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsPixelGridEnabled}" ToolTip="Forensic Pixel Grid">
+                        <TextBlock Text="▦ Grid"/>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsFilmstripVisible}" ToolTip="Toggle Thumbnail Filmstrip (T)">
+                        <TextBlock Text="🎞 Strip"/>
+                    </ToggleButton>
+
+                    <Rectangle Width="1" Height="18" Fill="#2E344E" Margin="8,0"/>
+
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding CopyImageCommand}" ToolTip="Copy Image to Clipboard (Ctrl+C)">
+                        <TextBlock Text="📋 Copy"/>
+                    </Button>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding DeleteFileCommand}" ToolTip="Move to Recycle Bin (Delete)" Foreground="#F38BA8">
+                        <TextBlock Text="🗑 Delete"/>
+                    </Button>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsMetadataDrawerOpen}" ToolTip="Image EXIF &amp; Telemetry Info (I / Alt+Enter)">
+                        <TextBlock Text="ℹ Info"/>
+                    </ToggleButton>
+                    <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding ToggleFullScreenCommand}" ToolTip="Toggle Fullscreen (F11)">
+                        <TextBlock Text="⛶ Full"/>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- ================= MAIN VIEWPORT AREA ================= -->
+        <Grid Grid.Row="1">
+            <!-- GPU Image Viewer Control -->
+            <media:ZImageViewer x:Name="ImageViewer"
+                                Source="{Binding CurrentImageSource}"
+                                Zoom="{Binding CurrentZoom, Mode=TwoWay}"
+                                ShowMiniMap="{Binding IsMiniMapEnabled}"
+                                ShowPixelGrid="{Binding IsPixelGridEnabled}"
+                                ShowLoupe="False"
+                                ShowToolbar="False"
+                                ShowStatusBar="False"/>
+
+            <!-- Placeholder Welcome Screen if No Image Loaded -->
+            <Border Background="#11131F"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Padding="32"
+                    CornerRadius="8"
+                    BorderBrush="#2E344E"
+                    BorderThickness="1"
+                    Visibility="{Binding CurrentImageSource, Converter={StaticResource InvBoolToVis}}">
+                <StackPanel HorizontalAlignment="Center" MaxWidth="450">
+                    <TextBlock Text="🖼" FontSize="56" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                    <TextBlock Text="Zero Universe — ZView" FontSize="20" FontWeight="Bold" Foreground="#F1F5F9" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="High-performance, ultra-fast, lightweight image workstation." FontSize="13" Foreground="#94A3B8" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,16">
+                        <Button Style="{StaticResource ToolbarBtnStyle}"
+                                Command="{Binding OpenFileCommand}"
+                                Background="#818CF8" Foreground="#11131F"
+                                FontWeight="Bold" Height="34" Padding="16,6" Margin="0,0,10,0">
+                            <TextBlock Text="Open Image File"/>
+                        </Button>
+                        <Button Style="{StaticResource ToolbarBtnStyle}"
+                                Command="{Binding OpenFolderCommand}"
+                                Height="34" Padding="14,6">
+                            <TextBlock Text="Open Folder"/>
+                        </Button>
+                    </StackPanel>
+
+                    <TextBlock Text="Or drag &amp; drop any image or folder here" FontSize="11" Foreground="#64748B" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Loading Spinner Indicator -->
+            <Border Background="#CC11131F"
+                    CornerRadius="8"
+                    Padding="16,10"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="⚡ Loading image..." Foreground="#818CF8" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Floating OSD (On-Screen Display) Banner -->
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="0,20,0,0"
+                    Background="#CC181A28"
+                    BorderBrush="#80818CF8"
+                    BorderThickness="1"
+                    CornerRadius="20"
+                    Padding="16,6"
+                    Visibility="{Binding IsOsdVisible, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{Binding OsdText}" Foreground="#F1F5F9" FontSize="12" FontWeight="SemiBold"/>
+            </Border>
+
+            <!-- Right Slide-In EXIF & Telemetry Drawer -->
+            <Border HorizontalAlignment="Right"
+                    VerticalAlignment="Stretch"
+                    Width="320"
+                    Background="#F2181A28"
+                    BorderBrush="#2E344E"
+                    BorderThickness="1,0,0,0"
+                    Visibility="{Binding IsMetadataDrawerOpen, Converter={StaticResource BoolToVis}}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <!-- Drawer Header -->
+                        <DockPanel LastChildFill="True" Margin="0,0,0,16">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource ToolbarBtnStyle}" Command="{Binding ToggleMetadataCommand}" Content="✕" Width="26" Height="26"/>
+                            <TextBlock Text="EXIF &amp; METADATA" FontWeight="Bold" FontSize="13" Foreground="#818CF8" VerticalAlignment="Center"/>
+                        </DockPanel>
+
+                        <!-- File Section -->
+                        <TextBlock Text="FILE ATTRIBUTES" FontSize="10" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
+                        <Border Background="#1D2034" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                            <StackPanel>
+                                <TextBlock Text="{Binding CurrentMetadata.FileName}" FontWeight="SemiBold" Foreground="#F1F5F9" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBlock Text="{Binding CurrentMetadata.FileSizeFormatted}" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,4"/>
+                                <TextBlock Text="{Binding CurrentMetadata.FilePath}" FontSize="10" Foreground="#64748B" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Image Dimensions Section -->
+                        <TextBlock Text="IMAGE TELEMETRY" FontSize="10" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
+                        <Border Background="#1D2034" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,8">
+                                    <TextBlock Text="Resolution" FontSize="10" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.PixelWidth, StringFormat='{}{0}px'}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,8">
+                                    <TextBlock Text="Height" FontSize="10" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.PixelHeight, StringFormat='{}{0}px'}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,8">
+                                    <TextBlock Text="Aspect Ratio" FontSize="10" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.AspectRatio}" FontWeight="SemiBold" Foreground="#818CF8"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,8">
+                                    <TextBlock Text="Megapixels" FontSize="10" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.Megapixels}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="2" Grid.Column="0">
+                                    <TextBlock Text="Bit Depth" FontSize="10" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.BitsPerPixel, StringFormat='{}{0} bpp'}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="2" Grid.Column="1">
+                                    <TextBlock Text="Density" FontSize="10" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.DpiX, StringFormat='{}{0} DPI'}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Camera EXIF Section -->
+                        <TextBlock Text="CAMERA EXIF TELEMETRY" FontSize="10" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
+                        <Border Background="#1D2034" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                            <StackPanel>
+                                <StackPanel Margin="0,0,0,6">
+                                    <TextBlock Text="Camera Model" FontSize="10" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.CameraModel, FallbackValue='N/A'}" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,0,6">
+                                    <TextBlock Text="Lens" FontSize="10" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.LensModel, FallbackValue='N/A'}" FontSize="11" Foreground="#94A3B8"/>
+                                </StackPanel>
+
+                                <Grid Margin="0,4,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="ISO" FontSize="10" Foreground="#64748B"/>
+                                        <TextBlock Text="{Binding CurrentMetadata.Iso, FallbackValue='-'}" FontWeight="SemiBold" Foreground="#A6E3A1"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Aperture" FontSize="10" Foreground="#64748B"/>
+                                        <TextBlock Text="{Binding CurrentMetadata.FNumber, FallbackValue='-'}" FontWeight="SemiBold" Foreground="#F9E2AF"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Shutter" FontSize="10" Foreground="#64748B"/>
+                                        <TextBlock Text="{Binding CurrentMetadata.ExposureTime, FallbackValue='-'}" FontWeight="SemiBold" Foreground="#818CF8"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- ================= BOTTOM FILMSTRIP ================= -->
+        <Border Grid.Row="2"
+                Background="#141724"
+                BorderBrush="#2E344E"
+                BorderThickness="0,1,0,0"
+                Height="92"
+                Visibility="{Binding IsFilmstripVisible, Converter={StaticResource BoolToVis}}">
+            <ListBox x:Name="FilmstripList"
+                     ItemsSource="{Binding Items}"
+                     SelectedItem="{Binding CurrentItem, Mode=OneWay}"
+                     SelectionChanged="FilmstripList_SelectionChanged"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="4"/>
+                        <Setter Property="Margin" Value="2,4"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="2"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border x:Name="itemBorder"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="4"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="#4F46E5"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="#818CF8"/>
+                                            <Setter TargetName="itemBorder" Property="Background" Value="#252A42"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Width="76" Height="76">
+                            <Border Background="#1D2034" CornerRadius="3">
+                                <Image Source="{Binding Thumbnail}" Stretch="Uniform" RenderOptions.BitmapScalingMode="LowQuality"/>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+
+        <!-- ================= BOTTOM STATUSBAR ================= -->
+        <Border Grid.Row="3"
+                Background="#181A28"
+                BorderBrush="#2E344E"
+                BorderThickness="0,1,0,0"
+                Padding="12,4"
+                Visibility="{Binding IsFullScreen, Converter={StaticResource InvBoolToVis}}">
+            <DockPanel LastChildFill="True">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <TextBlock Text="Shortcuts: Left/Right (Nav) · Ctrl+Scroll (Zoom) · F11 (Fullscreen) · I (Info) · T (Strip)"
+                               FontSize="11" Foreground="#64748B"/>
+                </StackPanel>
+                <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="#94A3B8" TextTrimming="CharacterEllipsis"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

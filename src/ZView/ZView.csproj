@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>ZView</RootNamespace>
+    <AssemblyName>ZView</AssemblyName>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Product>ZView</Product>
+    <AssemblyTitle>ZView Image Workstation</AssemblyTitle>
+    <Description>ZView — Enterprise High-Performance Image Viewer &amp; Telemetry Inspection Studio.</Description>
+    <Company>ZeroUniverse</Company>
+    <ApplicationIcon Condition="Exists('Resources\app.ico')">Resources\app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ZView.Core\ZView.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroUI\src\ZeroUI.Core\ZeroUI.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroUI\src\Wpf\ZeroUI.Wpf\ZeroUI.Wpf.csproj" />
+    <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroUI\src\Wpf\ZeroUI.Wpf.Media\ZeroUI.Wpf.Media.csproj" />
+  </ItemGroup>
+</Project>

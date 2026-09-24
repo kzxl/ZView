@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ZView.Core/ZView.Core.csproj" />
+    <Project Path="src/ZView/ZView.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ZView.Tests/ZView.Tests.csproj" />
+  </Folder>
+</Solution>

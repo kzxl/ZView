@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ZView.Core</RootNamespace>
+    <AssemblyName>ZView.Core</AssemblyName>
+    <Description>ZView Core - High-performance image decoding, folder navigation, metadata extraction, and prefetch caching engine.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroUI\src\ZeroUI.Core\ZeroUI.Core.csproj" />
+  </ItemGroup>
+</Project>
