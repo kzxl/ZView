@@ -50,7 +50,6 @@ namespace ZView.ViewModels
 
         // Theme and Localization
         private bool _isDarkMode = false;
-        private bool _isVietnamese = true;
 
         public ObservableCollection<ImageFileItem> Items { get; } = new();
         public ObservableCollection<ImageFileItem> FilteredItems { get; } = new();
@@ -128,19 +127,28 @@ namespace ZView.ViewModels
             }
         }
 
-        public bool IsVietnamese
+        public ObservableCollection<LanguageItem> SupportedLanguages { get; } = new()
         {
-            get => _isVietnamese;
+            new LanguageItem { Code = "vi-VN", DisplayName = "Tiếng Việt", Flag = "🇻🇳" },
+            new LanguageItem { Code = "en-US", DisplayName = "English", Flag = "🇺🇸" },
+            new LanguageItem { Code = "ja-JP", DisplayName = "日本語", Flag = "🇯🇵" }
+        };
+
+        private LanguageItem? _selectedLanguage;
+        public LanguageItem? SelectedLanguage
+        {
+            get => _selectedLanguage;
             set
             {
-                if (SetProperty(ref _isVietnamese, value))
+                if (SetProperty(ref _selectedLanguage, value) && value != null)
                 {
-                    ZeroUI.Core.Localization.LocalizationManager.SetLanguage(value ? "vi-VN" : "en-US");
-                    ShowOsd(value ? "🇻🇳 Tiếng Việt" : "🇺🇸 English");
+                    ZeroUI.Core.Localization.LocalizationManager.SetLanguage(value.Code);
+                    ShowOsd($"{value.Flag} {value.DisplayName}");
                     OnPropertyChanged(nameof(TitleText));
                 }
             }
         }
+
 
         private bool _showThumbnailFileName = true;
         private double _thumbnailCardSize = 78.0;
@@ -352,8 +360,10 @@ namespace ZView.ViewModels
             OpenUpdateDialogCommand = new RelayCommand(() => IsUpdateDialogOpen = true);
             CloseUpdateDialogCommand = new RelayCommand(() => IsUpdateDialogOpen = false);
 
+            _selectedLanguage = SupportedLanguages[0];
+
             ToggleThemeCommand = new RelayCommand(() => IsDarkMode = !IsDarkMode);
-            ToggleLanguageCommand = new RelayCommand(() => IsVietnamese = !IsVietnamese);
+            ToggleLanguageCommand = new RelayCommand(CycleLanguage);
             OpenSkinStudioCommand = new RelayCommand(() =>
             {
                 try
@@ -735,6 +745,13 @@ namespace ZView.ViewModels
             }
         }
 
+        public void CycleLanguage()
+        {
+            int currentIndex = SupportedLanguages.IndexOf(_selectedLanguage ?? SupportedLanguages[0]);
+            int nextIndex = (currentIndex + 1) % SupportedLanguages.Count;
+            SelectedLanguage = SupportedLanguages[nextIndex];
+        }
+
         public void ShowOsd(string text)
         {
             OsdText = text;
@@ -749,6 +766,14 @@ namespace ZView.ViewModels
                 });
             });
         }
+    }
+
+    public class LanguageItem
+    {
+        public string Code { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public string Flag { get; set; } = string.Empty;
+        public override string ToString() => $"{Flag} {DisplayName}";
     }
 }
 

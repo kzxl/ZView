@@ -620,12 +620,30 @@
                         <TextBlock Text="{loc:Loc Key=ZView.Settings.ThemeGroup, Default='GIAO DIỆN &amp; MÀU SẮC'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" Margin="0,0,0,8"/>
                         <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="6" Padding="12" Margin="0,0,0,14">
                             <StackPanel>
-                                <DockPanel Margin="0,0,0,10">
+                                <DockPanel Margin="0,0,0,12">
                                     <CheckBox IsChecked="{Binding IsDarkMode}" Content="{loc:Loc Key=ZView.Settings.DarkMode, Default='Chế độ nền tối (Dark Theme)'}" Foreground="{DynamicResource ZeroUI.TextPrimary}" FontSize="12" VerticalAlignment="Center"/>
                                 </DockPanel>
-                                <DockPanel Margin="0,0,0,10">
-                                    <CheckBox IsChecked="{Binding IsVietnamese}" Content="{loc:Loc Key=ZView.Settings.VietnameseLang, Default='Ngôn ngữ Tiếng Việt (🇻🇳)'}" Foreground="{DynamicResource ZeroUI.TextPrimary}" FontSize="12" VerticalAlignment="Center"/>
-                                </DockPanel>
+
+                                <!-- Language Selection ComboBox -->
+                                <StackPanel Margin="0,0,0,12">
+                                    <TextBlock Text="{loc:Loc Key=ZView.Settings.LanguageLabel, Default='Ngôn ngữ hiển thị (Language):'}"
+                                               FontSize="11" Foreground="{DynamicResource ZeroUI.TextSecondary}" Margin="0,0,0,6"/>
+                                    <ComboBox ItemsSource="{Binding SupportedLanguages}"
+                                              SelectedItem="{Binding SelectedLanguage}"
+                                              Background="{DynamicResource ZeroUI.BgCard}"
+                                              Foreground="{DynamicResource ZeroUI.TextPrimary}"
+                                              BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
+                                              Padding="8,5" Height="30">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Flag}" Margin="0,0,6,0" FontSize="12"/>
+                                                    <TextBlock Text="{Binding DisplayName}" FontSize="12" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
                                 <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding OpenSkinStudioCommand}"
                                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                                         Padding="10,6" Margin="0,4,0,0" ToolTip="Tùy chỉnh bảng màu giao diện nâng cao">

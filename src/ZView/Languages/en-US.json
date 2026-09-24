@@ -35,7 +35,7 @@
   "ZView.Settings.PixelGrid": "Forensic Pixel Grid",
   "ZView.Settings.ThemeGroup": "THEME & APPEARANCE",
   "ZView.Settings.DarkMode": "Dark Theme Mode",
-  "ZView.Settings.VietnameseLang": "Vietnamese Language (🇻🇳)",
+  "ZView.Settings.LanguageLabel": "Display Language:",
 
   "ZView.Drawer.Title": "IMAGE METADATA & TELEMETRY",
   "ZView.Drawer.BasicInfo": "BASIC FILE METRICS",

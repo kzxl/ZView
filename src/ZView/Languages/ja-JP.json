@@ -33,6 +33,9 @@
   "ZView.Settings.HudGroup": "HUDナビゲーションツール",
   "ZView.Settings.MiniMap": "レーダーミニマップ",
   "ZView.Settings.PixelGrid": "ピクセルグリッド",
+  "ZView.Settings.ThemeGroup": "外観とカラーテーマ",
+  "ZView.Settings.DarkMode": "ダークモード (Dark Theme)",
+  "ZView.Settings.LanguageLabel": "表示言語 (Language):",
 
   "ZView.Drawer.Title": "メタデータ＆EXIF情報",
   "ZView.Drawer.BasicInfo": "基本ファイル情報",

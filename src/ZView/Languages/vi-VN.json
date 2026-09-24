@@ -35,7 +35,7 @@
   "ZView.Settings.PixelGrid": "Lưới điểm ảnh pháp y (Pixel Grid)",
   "ZView.Settings.ThemeGroup": "GIAO DIỆN & MÀU SẮC",
   "ZView.Settings.DarkMode": "Chế độ nền tối (Dark Theme)",
-  "ZView.Settings.VietnameseLang": "Ngôn ngữ Tiếng Việt (🇻🇳)",
+  "ZView.Settings.LanguageLabel": "Ngôn ngữ hiển thị (Language):",
 
   "ZView.Drawer.Title": "SIÊU DỮ LIỆU & THÔNG SỐ KỸ THUẬT",
   "ZView.Drawer.BasicInfo": "THÔNG TIN TỆP CƠ BẢN",
