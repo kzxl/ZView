@@ -173,8 +173,14 @@ namespace ZView.Views
                             _vm.CopyImageCommand.Execute(null);
                         e.Handled = true;
                         return;
+                    case Key.P:
+                        if (_vm.PrintImageCommand.CanExecute(null))
+                            _vm.PrintImageCommand.Execute(null);
+                        e.Handled = true;
+                        return;
                 }
             }
+
 
             // Single key shortcuts for pure image navigation & view modes
             switch (e.Key)

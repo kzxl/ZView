@@ -224,6 +224,7 @@ namespace ZView.ViewModels
         public ICommand ToggleThemeCommand { get; }
         public ICommand ToggleLanguageCommand { get; }
         public ICommand OpenSkinStudioCommand { get; }
+        public ICommand PrintImageCommand { get; }
         public ICommand CopyImageCommand { get; }
         public ICommand CopyPathCommand { get; }
         public ICommand DeleteFileCommand { get; }
@@ -273,11 +274,13 @@ namespace ZView.ViewModels
                 }
             });
 
+            PrintImageCommand = new RelayCommand(PrintImage, () => CurrentImageSource != null);
             CopyImageCommand = new RelayCommand(CopyImageToClipboard, () => CurrentImageSource != null);
             CopyPathCommand = new RelayCommand(CopyPathToClipboard, () => CurrentItem != null);
             DeleteFileCommand = new RelayCommand(DeleteCurrentFile, () => CurrentItem != null);
             RefreshCommand = new RelayCommand(() => _navigation.Refresh());
         }
+
 
         public async Task OpenFileOrDirectoryAsync(string path)
         {
@@ -499,6 +502,51 @@ namespace ZView.ViewModels
             }
         }
 
+        private void PrintImage()
+        {
+
+            if (CurrentImageSource == null) return;
+
+            try
+            {
+                var printDlg = new System.Windows.Controls.PrintDialog();
+                if (printDlg.ShowDialog() == true)
+                {
+                    double printableWidth = printDlg.PrintableAreaWidth;
+                    double printableHeight = printDlg.PrintableAreaHeight;
+
+                    var bitmap = CurrentImageSource;
+                    double imgWidth = bitmap.PixelWidth;
+                    double imgHeight = bitmap.PixelHeight;
+
+                    if (imgWidth <= 0 || imgHeight <= 0) return;
+
+                    // Preserve aspect ratio and scale to fit printable page area
+                    double scale = Math.Min(printableWidth / imgWidth, printableHeight / imgHeight);
+                    double targetWidth = imgWidth * scale;
+                    double targetHeight = imgHeight * scale;
+
+                    // Center on paper
+                    double offsetX = (printableWidth - targetWidth) / 2.0;
+                    double offsetY = (printableHeight - targetHeight) / 2.0;
+
+                    var visual = new System.Windows.Media.DrawingVisual();
+                    using (var dc = visual.RenderOpen())
+                    {
+                        dc.DrawImage(bitmap, new Rect(offsetX, offsetY, targetWidth, targetHeight));
+                    }
+
+                    string title = CurrentItem != null ? $"ZView — {CurrentItem.FileName}" : "ZView Image";
+                    printDlg.PrintVisual(visual, title);
+                    ShowOsd("🖨️ Đã gửi ảnh tới máy in");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Không thể thực hiện in ảnh: {ex.Message}", "Lỗi In Ảnh — ZView", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         public void ShowOsd(string text)
         {
             OsdText = text;
@@ -515,3 +563,4 @@ namespace ZView.ViewModels
         }
     }
 }
+

@@ -37,11 +37,12 @@ namespace ZView.Services
                 ["ZView.Nav.Fit"] = "Vừa khung (F)",
                 ["ZView.Nav.ActualSize"] = "Kích thước gốc 100% (1)",
                 ["ZView.Nav.RotateLeft"] = "Xoay trái 90° (L)",
-                ["ZView.Nav.RotateRight"] = "Xoay phải 90° (R)",
                 ["ZView.Nav.FlipH"] = "Lật ngang (H)",
                 ["ZView.Nav.FlipV"] = "Lật dọc (V)",
                 ["ZView.Nav.Filmstrip"] = "Bật/Tắt dải phim thumbnail (B)",
+                ["ZView.Nav.Print"] = "In ảnh trực tiếp (Ctrl+P)",
                 ["ZView.Nav.Fullscreen"] = "Toàn màn hình (F11)",
+
                 ["ZView.Nav.Theme"] = "Chuyển giao diện (Sáng / Tối)",
                 ["ZView.Nav.SkinStudio"] = "Bảng màu Skin Studio",
                 ["ZView.Nav.Language"] = "Ngôn ngữ / Language (VI / EN)",
@@ -152,7 +153,9 @@ namespace ZView.Services
                 ["ZView.Nav.FlipH"] = "Flip Horizontal (H)",
                 ["ZView.Nav.FlipV"] = "Flip Vertical (V)",
                 ["ZView.Nav.Filmstrip"] = "Toggle Filmstrip (B)",
+                ["ZView.Nav.Print"] = "Print Image (Ctrl+P)",
                 ["ZView.Nav.Fullscreen"] = "Toggle Fullscreen (F11)",
+
                 ["ZView.Nav.Theme"] = "Toggle Theme (Light / Dark)",
                 ["ZView.Nav.SkinStudio"] = "Skin Studio Palette",
                 ["ZView.Nav.Language"] = "Language / Ngôn ngữ (EN / VI)",
