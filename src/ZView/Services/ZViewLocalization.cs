@@ -29,7 +29,9 @@ namespace ZView.Services
 
                 // Navigation & Primary Actions
                 ["ZView.Nav.Open"] = "Mở tệp ảnh (Ctrl+O)",
+                ["ZView.Nav.OpenBtn"] = "Mở ảnh",
                 ["ZView.Nav.OpenFolder"] = "Mở thư mục ảnh (Ctrl+Shift+O)",
+                ["ZView.Nav.OpenFolderBtn"] = "Thư mục",
                 ["ZView.Nav.Prev"] = "Ảnh trước (← / PageUp)",
                 ["ZView.Nav.Next"] = "Ảnh sau (→ / PageDown)",
                 ["ZView.Nav.Save"] = "Lưu / Xuất ảnh nướng lớp (Ctrl+S)",
@@ -141,7 +143,9 @@ namespace ZView.Services
 
                 // Navigation & Primary Actions
                 ["ZView.Nav.Open"] = "Open Image File (Ctrl+O)",
+                ["ZView.Nav.OpenBtn"] = "Open Image",
                 ["ZView.Nav.OpenFolder"] = "Open Folder (Ctrl+Shift+O)",
+                ["ZView.Nav.OpenFolderBtn"] = "Folder",
                 ["ZView.Nav.Prev"] = "Previous Image (← / PageUp)",
                 ["ZView.Nav.Next"] = "Next Image (→ / PageDown)",
                 ["ZView.Nav.Save"] = "Save / Burn Export (Ctrl+S)",

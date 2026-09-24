@@ -272,13 +272,13 @@
                     <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding OpenFileCommand}" ToolTip="{loc:Loc Key=ZView.Nav.Open, Default='Mở tệp ảnh (Ctrl+O)'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="📁 "/>
-                            <TextBlock Text="{loc:Loc Key=Common.Open, Default='Mở'}"/>
+                            <TextBlock Text="{loc:Loc Key=ZView.Nav.OpenBtn, Default='Mở ảnh'}"/>
                         </StackPanel>
                     </Button>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding OpenFolderCommand}" ToolTip="{loc:Loc Key=ZView.Nav.OpenFolder, Default='Mở thư mục ảnh (Ctrl+Shift+O)'}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="📂 "/>
-                            <TextBlock Text="{loc:Loc Key=ZView.Nav.OpenFolder, Default='Thư mục'}"/>
+                            <TextBlock Text="{loc:Loc Key=ZView.Nav.OpenFolderBtn, Default='Thư mục'}"/>
                         </StackPanel>
                     </Button>
 
@@ -374,30 +374,36 @@
             <Border Background="{DynamicResource ZeroUI.BgPrimary}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Padding="36"
+                    Padding="36,28"
                     CornerRadius="12"
                     BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
                     BorderThickness="1"
                     Visibility="{Binding CurrentImageSource, Converter={StaticResource InvNullToVis}}">
-                <StackPanel HorizontalAlignment="Center" MaxWidth="480">
-                    <TextBlock Text="🖼️" FontSize="56" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-                    <TextBlock Text="{loc:Loc Key=ZView.Title, Default='Zero Universe — ZView'}" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextPrimary}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                    <TextBlock Text="{loc:Loc Key=ZView.Empty.DragDrop, Default='Kéo thả ảnh hoặc thư mục vào đây để duyệt'}" FontSize="13" Foreground="{DynamicResource ZeroUI.TextSecondary}" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                <StackPanel HorizontalAlignment="Center" MaxWidth="540">
+                    <TextBlock Text="🖼️" FontSize="52" HorizontalAlignment="Center" Margin="0,0,0,14"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Title, Default='ZView — Trạm Quan Sát &amp; Phân Tích Ảnh Chuyên Sâu'}" 
+                               FontSize="18" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextPrimary}" 
+                               HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Empty.DragDrop, Default='Kéo thả ảnh hoặc thư mục vào đây để duyệt'}" 
+                               FontSize="13" Foreground="{DynamicResource ZeroUI.TextSecondary}" 
+                               HorizontalAlignment="Center" TextAlignment="Center" Margin="0,0,0,20"/>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,16">
                         <zuib:ZButton Variant="Primary"
                                      Command="{Binding OpenFileCommand}"
                                      Height="36" Padding="18,6" Margin="0,0,10,0">
-                            <TextBlock Text="{loc:Loc Key=ZView.Empty.BrowseButton, Default='📁 Mở tệp ảnh...'}"/>
+                            <TextBlock Text="{loc:Loc Key=ZView.Empty.BrowseButton, Default='📁 Chọn tệp ảnh...'}"/>
                         </zuib:ZButton>
                         <zuib:ZButton Variant="Secondary"
                                      Command="{Binding OpenFolderCommand}"
                                      Height="36" Padding="16,6">
-                            <TextBlock Text="{loc:Loc Key=ZView.Nav.OpenFolder, Default='📂 Mở thư mục'}"/>
+                            <TextBlock Text="{loc:Loc Key=ZView.Nav.OpenFolder, Default='📂 Mở thư mục...'}"/>
                         </zuib:ZButton>
                     </StackPanel>
 
-                    <TextBlock Text="{loc:Loc Key=ZView.Empty.SupportedFormats, Default='Hỗ trợ chuẩn 30+ định dạng: PNG, JPG, WEBP, AVIF, HEIC, TIFF, BMP, ICO, TGA, PSD, SVG, RAW/DNG...'}" FontSize="11" Foreground="{DynamicResource ZeroUI.TextMuted}" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <TextBlock Text="{loc:Loc Key=ZView.Empty.SupportedFormats, Default='Hỗ trợ chuẩn 30+ định dạng: PNG, JPG, WEBP, AVIF, HEIC, TIFF, BMP, ICO, TGA, PSD, SVG, RAW/DNG...'}" 
+                               FontSize="11" Foreground="{DynamicResource ZeroUI.TextMuted}" 
+                               TextWrapping="Wrap" TextAlignment="Center" LineHeight="16"/>
                 </StackPanel>
             </Border>
 
