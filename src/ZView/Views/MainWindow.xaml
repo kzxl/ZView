@@ -179,8 +179,27 @@
                 BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
                 BorderThickness="0,0,0,1">
             <DockPanel LastChildFill="True">
-                <!-- Caption Buttons (Right-aligned) -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <!-- GitHub Update Notification Pill Badge -->
+                    <Button Style="{StaticResource CaptionBtnStyle}"
+                            WindowChrome.IsHitTestVisibleInChrome="True"
+                            Command="{Binding OpenUpdateDialogCommand}"
+                            Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVis}}"
+                            ToolTip="Có bản cập nhật mới từ GitHub! Bấm để xem chi tiết"
+                            Width="Auto" Padding="6,2">
+                        <Border Background="#F59E0B" CornerRadius="10" Padding="8,2">
+                            <TextBlock Text="{Binding UpdateBadgeText}" Foreground="White" FontWeight="Bold" FontSize="10"/>
+                        </Border>
+                    </Button>
+
+                    <!-- Shortcut Help Button -->
+                    <Button Style="{StaticResource CaptionBtnStyle}"
+                            WindowChrome.IsHitTestVisibleInChrome="True"
+                            Command="{Binding ToggleShortcutDialogCommand}"
+                            ToolTip="{loc:Loc Key=ZView.Nav.Help, Default='Phím tắt &amp; Trợ giúp (?)'}">
+                        <TextBlock Text="❓" FontSize="11"/>
+                    </Button>
+
                     <!-- Settings Options Button -->
                     <Button Style="{StaticResource CaptionBtnStyle}"
                             WindowChrome.IsHitTestVisibleInChrome="True"
@@ -331,6 +350,12 @@
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsPixelGridEnabled}" ToolTip="{loc:Loc Key=ZView.Settings.PixelGrid, Default='Lưới điểm ảnh (Grid)'}">
                         <TextBlock Text="▦"/>
                     </ToggleButton>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsLoupeEnabled}" ToolTip="Kính lúp nổi theo chuột (Z)">
+                        <TextBlock Text="🔍"/>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsFilterVisible}" ToolTip="Tìm kiếm &amp; Lọc ảnh (/ / Ctrl+F)">
+                        <TextBlock Text="🔎"/>
+                    </ToggleButton>
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsFilmstripVisible}" ToolTip="{loc:Loc Key=ZView.Nav.Filmstrip, Default='Bật/Tắt dải phim (B)'}">
                         <TextBlock Text="🎞️"/>
                     </ToggleButton>
@@ -366,7 +391,7 @@
                                 Zoom="{Binding CurrentZoom, Mode=TwoWay}"
                                 ShowMiniMap="{Binding IsMiniMapEnabled}"
                                 ShowPixelGrid="{Binding IsPixelGridEnabled}"
-                                ShowLoupe="False"
+                                ShowLoupe="{Binding IsLoupeEnabled}"
                                 ShowToolbar="False"
                                 ShowStatusBar="False"/>
 
@@ -649,82 +674,96 @@
                 Height="{Binding ThumbnailCardSize, ConverterParameter=22, Converter={x:Null}}"
                 MinHeight="64"
                 Visibility="{Binding IsFilmstripVisible, Converter={StaticResource BoolToVis}}">
-            <ListBox x:Name="FilmstripList"
-                     ItemsSource="{Binding Items}"
-                     SelectedItem="{Binding CurrentItem, Mode=OneWay}"
-                     SelectionChanged="FilmstripList_SelectionChanged"
-                     Background="Transparent"
-                     BorderThickness="0"
-                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Padding" Value="3"/>
-                        <Setter Property="Margin" Value="2,3"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="BorderBrush" Value="Transparent"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                        <Setter Property="Cursor" Value="Hand"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListBoxItem">
-                                    <Border x:Name="itemBorder"
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="6"
-                                            Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource ZeroUI.PrimaryAccent}"/>
-                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ZeroUI.BgHover}"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource ZeroUI.PrimaryAccent}"/>
-                                            <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ZeroUI.SelectionBackground}"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Width="{Binding DataContext.ThumbnailCardSize, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                              Height="{Binding DataContext.ThumbnailCardSize, RelativeSource={RelativeSource AncestorType=ListBox}}">
-                            <!-- Background Card & Thumbnail -->
-                            <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="4">
-                                <Grid>
-                                    <!-- Fallback Loading Icon -->
-                                    <TextBlock Text="🖼️" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.3"
-                                               Visibility="{Binding Thumbnail, Converter={StaticResource InvNullToVis}}"/>
-                                    <!-- Real Loaded Thumbnail -->
-                                    <Image Source="{Binding Thumbnail}" Stretch="Uniform" RenderOptions.BitmapScalingMode="LowQuality"
-                                           Visibility="{Binding Thumbnail, Converter={StaticResource NullToVis}}"/>
-                                </Grid>
-                            </Border>
+            <DockPanel LastChildFill="True">
+                <!-- Search & Quick Filter Floating Bar -->
+                <Border DockPanel.Dock="Top" Background="{DynamicResource ZeroUI.BgInput}" Padding="8,3" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ZeroUI.BorderDefault}"
+                        Visibility="{Binding IsFilterVisible, Converter={StaticResource BoolToVis}}">
+                    <DockPanel LastChildFill="True">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource ToolbarBtnStyle}" Command="{Binding ToggleFilterCommand}" Content="✕" Width="20" Height="20" Margin="4,0,0,0"/>
+                        <TextBlock Text="🔎" FontSize="11" VerticalAlignment="Center" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="Transparent" BorderThickness="0" Foreground="{DynamicResource ZeroUI.TextPrimary}"
+                                 FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                    </DockPanel>
+                </Border>
 
-                            <!-- Filename Badge -->
-                            <Border Background="{DynamicResource ZeroUI.BgCard}"
-                                    Opacity="0.9"
-                                    VerticalAlignment="Bottom"
-                                    CornerRadius="0,0,4,4"
-                                    Padding="4,2"
-                                    Visibility="{Binding DataContext.ShowThumbnailFileName, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BoolToVis}}">
-                                <TextBlock Text="{Binding FileName}" FontSize="9" Foreground="{DynamicResource ZeroUI.TextSecondary}" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"/>
-                            </Border>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                <ListBox x:Name="FilmstripList"
+                         ItemsSource="{Binding FilteredItems}"
+                         SelectedItem="{Binding CurrentItem, Mode=OneWay}"
+                         SelectionChanged="FilmstripList_SelectionChanged"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                         ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="3"/>
+                            <Setter Property="Margin" Value="2,3"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border x:Name="itemBorder"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="6"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                                <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ZeroUI.BgHover}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="itemBorder" Property="BorderBrush" Value="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                                <Setter TargetName="itemBorder" Property="Background" Value="{DynamicResource ZeroUI.SelectionBackground}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="{Binding DataContext.ThumbnailCardSize, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                  Height="{Binding DataContext.ThumbnailCardSize, RelativeSource={RelativeSource AncestorType=ListBox}}">
+                                <!-- Background Card & Thumbnail -->
+                                <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="4">
+                                    <Grid>
+                                        <!-- Fallback Loading Icon -->
+                                        <TextBlock Text="🖼️" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.3"
+                                                   Visibility="{Binding Thumbnail, Converter={StaticResource InvNullToVis}}"/>
+                                        <!-- Real Loaded Thumbnail -->
+                                        <Image Source="{Binding Thumbnail}" Stretch="Uniform" RenderOptions.BitmapScalingMode="LowQuality"
+                                               Visibility="{Binding Thumbnail, Converter={StaticResource NullToVis}}"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Filename Badge -->
+                                <Border Background="{DynamicResource ZeroUI.BgCard}"
+                                        Opacity="0.9"
+                                        VerticalAlignment="Bottom"
+                                        CornerRadius="0,0,4,4"
+                                        Padding="4,2"
+                                        Visibility="{Binding DataContext.ShowThumbnailFileName, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="{Binding FileName}" FontSize="9" Foreground="{DynamicResource ZeroUI.TextSecondary}" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
         </Border>
 
         <!-- ================= ROW 4: BOTTOM STATUSBAR ================= -->
@@ -736,12 +775,129 @@
                 Visibility="{Binding IsFullScreen, Converter={StaticResource InvBoolToVis}}">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                    <TextBlock Text="← / → (Nav) · Ctrl+P (Print) · F (Fit) · 1 (1:1) · R/L (Rotate) · B (Filmstrip) · I (EXIF) · S (Settings) · F11 (Full)"
+                    <TextBlock Text="← / → (Nav) · Ctrl+P (Print) · F (Fit) · 1 (1:1) · R/L (Rotate) · Z (Loupe) · B (Filmstrip) · I (EXIF) · S (Settings) · ? (Help)"
                                FontSize="11" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
                 </StackPanel>
 
                 <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="{DynamicResource ZeroUI.TextSecondary}" TextTrimming="CharacterEllipsis"/>
             </DockPanel>
+        </Border>
+
+        <!-- ================= DIALOG OVERLAYS ================= -->
+
+        <!-- 1. GitHub Update Dialog Modal Overlay -->
+        <Border Grid.RowSpan="5" Background="#80000000" Visibility="{Binding IsUpdateDialogOpen, Converter={StaticResource BoolToVis}}">
+            <Border Background="{DynamicResource ZeroUI.BgCard}" BorderBrush="{DynamicResource ZeroUI.PrimaryAccent}" BorderThickness="1.5" CornerRadius="12"
+                    Width="480" MaxHeight="420" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24">
+                <DockPanel LastChildFill="True">
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource ToolbarBtnStyle}" Command="{Binding CloseUpdateDialogCommand}" Content="✕" Width="26" Height="26"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="🚀 " FontSize="18"/>
+                            <TextBlock Text="BẢN CẬP NHẬT MỚI TỪ GITHUB" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource ZeroUI.PrimaryAccent}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DockPanel>
+
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                        <zuib:ZButton Variant="Secondary" Command="{Binding CloseUpdateDialogCommand}" Content="Đóng" Margin="0,0,10,0" Height="32" Padding="14,4"/>
+                        <zuib:ZButton Variant="Primary" Click="BtnDownloadUpdate_Click" Content="Tải &amp; Cập nhật qua ZUpdate" Height="32" Padding="16,4"/>
+                    </StackPanel>
+
+                    <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="8" Padding="14">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <DockPanel Margin="0,0,0,8">
+                                    <TextBlock Text="Phiên bản mới:" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                    <TextBlock Text="{Binding AvailableUpdate.LatestVersion}" HorizontalAlignment="Right" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.Success}"/>
+                                </DockPanel>
+                                <DockPanel Margin="0,0,0,8">
+                                    <TextBlock Text="Tiêu đề Release:" FontSize="11" Foreground="{DynamicResource ZeroUI.TextSecondary}"/>
+                                    <TextBlock Text="{Binding AvailableUpdate.ReleaseTitle}" HorizontalAlignment="Right" FontSize="11" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </DockPanel>
+                                <TextBlock Text="Ghi chú phát hành (Changelog):" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" Margin="0,6,0,4"/>
+                                <TextBlock Text="{Binding AvailableUpdate.ReleaseNotes}" FontSize="11" Foreground="{DynamicResource ZeroUI.TextSecondary}" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </DockPanel>
+            </Border>
+        </Border>
+
+        <!-- 2. Shortcut Cheat Sheet Modal Overlay -->
+        <Border Grid.RowSpan="5" Background="#80000000" Visibility="{Binding IsShortcutDialogOpen, Converter={StaticResource BoolToVis}}">
+            <Border Background="{DynamicResource ZeroUI.BgCard}" BorderBrush="{DynamicResource ZeroUI.BorderDefault}" BorderThickness="1.5" CornerRadius="12"
+                    Width="560" MaxHeight="520" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="24">
+                <DockPanel LastChildFill="True">
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource ToolbarBtnStyle}" Command="{Binding ToggleShortcutDialogCommand}" Content="✕" Width="26" Height="26"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="⌨️ " FontSize="18"/>
+                            <TextBlock Text="SƠ ĐỒ PHÍM TẮT THAO TÁC (CHEAT SHEET)" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource ZeroUI.PrimaryAccent}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DockPanel>
+
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                        <zuib:ZButton Variant="Primary" Command="{Binding ToggleShortcutDialogCommand}" Content="Đã hiểu" Height="32" Padding="20,4"/>
+                    </StackPanel>
+
+                    <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="8" Padding="14">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="← / PageUp / Back" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                    <TextBlock Grid.Column="1" Text="Ảnh liền trước" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="→ / PageDown / Space" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                    <TextBlock Grid.Column="1" Text="Ảnh tiếp theo" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="F / Ctrl+0" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                    <TextBlock Grid.Column="1" Text="Vừa khung nhìn (Fit to window)" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="1 / Ctrl+1" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                    <TextBlock Grid.Column="1" Text="Kích thước gốc 100% (1:1 Actual Size)" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="R / L" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                    <TextBlock Grid.Column="1" Text="Xoay ảnh 90° Phải / Trái" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="Z" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                    <TextBlock Grid.Column="1" Text="Bật / Tắt kính lúp nổi (Loupe HUD)" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="Ctrl + F" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                    <TextBlock Grid.Column="1" Text="Tìm kiếm &amp; Lọc nhanh trên dải phim" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="Ctrl + P" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                    <TextBlock Grid.Column="1" Text="In ảnh trực tiếp (Print Dialog)" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="I / S / B" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                    <TextBlock Grid.Column="1" Text="Bật/Tắt Siêu dữ liệu / Cài đặt / Dải phim" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="F11" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                    <TextBlock Grid.Column="1" Text="Chế độ toàn màn hình (Fullscreen)" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                </Grid>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </DockPanel>
+            </Border>
         </Border>
     </Grid>
 </Window>

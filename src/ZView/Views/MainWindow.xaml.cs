@@ -206,8 +206,16 @@ namespace ZView.Views
                     e.Handled = true;
                     break;
                 case Key.F:
-                    ImageViewer.FitToWindow();
-                    e.Handled = true;
+                    if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+                    {
+                        _vm.ToggleFilterCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    else
+                    {
+                        ImageViewer.FitToWindow();
+                        e.Handled = true;
+                    }
                     break;
                 case Key.D1:
                     ImageViewer.ActualSize();
@@ -219,6 +227,10 @@ namespace ZView.Views
                     break;
                 case Key.H:
                     ImageViewer.ToggleFlipHorizontal();
+                    e.Handled = true;
+                    break;
+                case Key.Z:
+                    _vm.ToggleLoupeCommand.Execute(null);
                     e.Handled = true;
                     break;
                 case Key.I:
@@ -236,6 +248,18 @@ namespace ZView.Views
                 case Key.T:
                     _vm.ToggleThemeCommand.Execute(null);
                     e.Handled = true;
+                    break;
+                case Key.OemQuestion:
+                case Key.F1:
+                    _vm.ToggleShortcutDialogCommand.Execute(null);
+                    e.Handled = true;
+                    break;
+                case Key.Escape:
+                    if (_vm.IsUpdateDialogOpen) { _vm.IsUpdateDialogOpen = false; e.Handled = true; }
+                    else if (_vm.IsShortcutDialogOpen) { _vm.IsShortcutDialogOpen = false; e.Handled = true; }
+                    else if (_vm.IsMetadataDrawerOpen) { _vm.IsMetadataDrawerOpen = false; e.Handled = true; }
+                    else if (_vm.IsSettingsDrawerOpen) { _vm.IsSettingsDrawerOpen = false; e.Handled = true; }
+                    else if (_vm.IsFullScreen) { _vm.IsFullScreen = false; e.Handled = true; }
                     break;
                 case Key.Delete:
                     if (_vm.DeleteFileCommand.CanExecute(null)) _vm.DeleteFileCommand.Execute(null);
@@ -256,6 +280,26 @@ namespace ZView.Views
                     e.Handled = true;
                     break;
             }
+        }
+
+        private void BtnDownloadUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            if (_vm.AvailableUpdate != null)
+            {
+                try
+                {
+                    string url = !string.IsNullOrEmpty(_vm.AvailableUpdate.AssetDownloadUrl)
+                        ? _vm.AvailableUpdate.AssetDownloadUrl
+                        : _vm.AvailableUpdate.HtmlUrl;
+
+                    if (!string.IsNullOrEmpty(url))
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+                    }
+                }
+                catch { }
+            }
+            _vm.IsUpdateDialogOpen = false;
         }
 
         #endregion

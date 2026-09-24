@@ -23,6 +23,7 @@ namespace ZView.ViewModels
         private readonly IFolderNavigationService _navigation;
         private readonly IImageCacheService _cache;
         private readonly IRecentFilesService _recentFiles;
+        private readonly IUpdateCheckerService _updateChecker;
 
         private BitmapSource? _currentImageSource;
         private ImageMetadataInfo? _currentMetadata;
@@ -33,6 +34,12 @@ namespace ZView.ViewModels
         private bool _isFilmstripVisible = true;
         private bool _isMiniMapEnabled = true;
         private bool _isPixelGridEnabled = true;
+        private bool _isLoupeEnabled = false;
+        private bool _isUpdateDialogOpen = false;
+        private bool _isShortcutDialogOpen = false;
+        private bool _isFilterVisible = false;
+        private string _searchQuery = string.Empty;
+        private UpdateInfo? _availableUpdate;
         private double _currentZoom = 1.0;
         private string _statusText = "Ready";
         private string _osdText = string.Empty;
@@ -46,8 +53,67 @@ namespace ZView.ViewModels
         private bool _isVietnamese = true;
 
         public ObservableCollection<ImageFileItem> Items { get; } = new();
+        public ObservableCollection<ImageFileItem> FilteredItems { get; } = new();
         public ObservableCollection<RecentFileEntry> RecentItems { get; } = new();
         public bool HasRecentItems => RecentItems.Count > 0;
+
+        public UpdateInfo? AvailableUpdate
+        {
+            get => _availableUpdate;
+            set
+            {
+                if (SetProperty(ref _availableUpdate, value))
+                {
+                    OnPropertyChanged(nameof(HasUpdate));
+                    OnPropertyChanged(nameof(UpdateBadgeText));
+                }
+            }
+        }
+
+        public bool HasUpdate => _availableUpdate?.HasUpdate == true;
+        public string UpdateBadgeText => _availableUpdate != null ? $"🚀 {_availableUpdate.LatestVersion}" : "";
+
+        public bool IsUpdateDialogOpen
+        {
+            get => _isUpdateDialogOpen;
+            set => SetProperty(ref _isUpdateDialogOpen, value);
+        }
+
+        public bool IsShortcutDialogOpen
+        {
+            get => _isShortcutDialogOpen;
+            set => SetProperty(ref _isShortcutDialogOpen, value);
+        }
+
+        public bool IsLoupeEnabled
+        {
+            get => _isLoupeEnabled;
+            set
+            {
+                if (SetProperty(ref _isLoupeEnabled, value))
+                {
+                    ShowOsd(value ? "🔍 Kính lúp (Loupe HUD): BẬT" : "🔍 Kính lúp (Loupe HUD): TẮT");
+                }
+            }
+        }
+
+        public bool IsFilterVisible
+        {
+            get => _isFilterVisible;
+            set => SetProperty(ref _isFilterVisible, value);
+        }
+
+        public string SearchQuery
+        {
+            get => _searchQuery;
+            set
+            {
+                if (SetProperty(ref _searchQuery, value))
+                {
+                    ApplyFilter();
+                }
+            }
+        }
 
         public bool IsDarkMode
         {
@@ -234,13 +300,20 @@ namespace ZView.ViewModels
         public ICommand DeleteFileCommand { get; }
         public ICommand RefreshCommand { get; }
         public ICommand OpenRecentItemCommand { get; }
+        public ICommand ToggleLoupeCommand { get; }
+        public ICommand ToggleFilterCommand { get; }
+        public ICommand ToggleShortcutDialogCommand { get; }
+        public ICommand CheckUpdateCommand { get; }
+        public ICommand OpenUpdateDialogCommand { get; }
+        public ICommand CloseUpdateDialogCommand { get; }
 
-        public MainViewModel(IImageLoaderService imageLoader, IFolderNavigationService navigation, IImageCacheService cache, IRecentFilesService? recentFiles = null)
+        public MainViewModel(IImageLoaderService imageLoader, IFolderNavigationService navigation, IImageCacheService cache, IRecentFilesService? recentFiles = null, IUpdateCheckerService? updateChecker = null)
         {
             _imageLoader = imageLoader ?? throw new ArgumentNullException(nameof(imageLoader));
             _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             _recentFiles = recentFiles ?? new RecentFilesService();
+            _updateChecker = updateChecker ?? new GitHubUpdateCheckerService();
 
             _navigation.CurrentItemChanged += OnNavigationCurrentItemChanged;
             _navigation.ItemsListChanged += OnNavigationItemsListChanged;
@@ -271,6 +344,13 @@ namespace ZView.ViewModels
             ToggleMetadataCommand = new RelayCommand(() => IsMetadataDrawerOpen = !IsMetadataDrawerOpen);
             ToggleSettingsCommand = new RelayCommand(() => IsSettingsDrawerOpen = !IsSettingsDrawerOpen);
             ToggleFilmstripCommand = new RelayCommand(() => IsFilmstripVisible = !IsFilmstripVisible);
+            ToggleLoupeCommand = new RelayCommand(() => IsLoupeEnabled = !IsLoupeEnabled);
+            ToggleFilterCommand = new RelayCommand(() => IsFilterVisible = !IsFilterVisible);
+            ToggleShortcutDialogCommand = new RelayCommand(() => IsShortcutDialogOpen = !IsShortcutDialogOpen);
+
+            CheckUpdateCommand = new RelayCommand(async () => await CheckForUpdatesAsync());
+            OpenUpdateDialogCommand = new RelayCommand(() => IsUpdateDialogOpen = true);
+            CloseUpdateDialogCommand = new RelayCommand(() => IsUpdateDialogOpen = false);
 
             ToggleThemeCommand = new RelayCommand(() => IsDarkMode = !IsDarkMode);
             ToggleLanguageCommand = new RelayCommand(() => IsVietnamese = !IsVietnamese);
@@ -295,6 +375,54 @@ namespace ZView.ViewModels
             RefreshCommand = new RelayCommand(() => _navigation.Refresh());
 
             RefreshRecentItems();
+
+            // Background update check on startup
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(2500);
+                await CheckForUpdatesAsync();
+            });
+        }
+
+        public async Task CheckForUpdatesAsync()
+        {
+            try
+            {
+                var info = await _updateChecker.CheckForUpdateAsync("ZeroUniverse", "ZeroApps", "1.0.0");
+                if (info != null && info.HasUpdate)
+                {
+                    Application.Current?.Dispatcher.Invoke(() =>
+                    {
+                        AvailableUpdate = info;
+                        ShowOsd($"🚀 Đã có phiên bản mới: {info.LatestVersion}");
+                    });
+                }
+            }
+            catch { }
+        }
+
+        private void ApplyFilter()
+        {
+            Application.Current?.Dispatcher.Invoke(() =>
+            {
+                FilteredItems.Clear();
+                if (string.IsNullOrWhiteSpace(_searchQuery))
+                {
+                    foreach (var it in Items) FilteredItems.Add(it);
+                }
+                else
+                {
+                    string q = _searchQuery.Trim();
+                    foreach (var it in Items)
+                    {
+                        if (it.FileName.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                            it.Extension.Contains(q, StringComparison.OrdinalIgnoreCase))
+                        {
+                            FilteredItems.Add(it);
+                        }
+                    }
+                }
+            });
         }
 
         public void RefreshRecentItems()
@@ -373,6 +501,7 @@ namespace ZView.ViewModels
                 {
                     Items.Add(item);
                 }
+                ApplyFilter();
                 OnPropertyChanged(nameof(TotalCount));
                 OnPropertyChanged(nameof(TitleText));
             });
