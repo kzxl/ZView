@@ -208,53 +208,7 @@
                         <TextBlock Text="⚙️" FontSize="12"/>
                     </Button>
 
-                    <!-- Language Switcher Quick Pill -->
-                    <Button Style="{StaticResource CaptionBtnStyle}"
-                            WindowChrome.IsHitTestVisibleInChrome="True"
-                            Command="{Binding ToggleLanguageCommand}"
-                            ToolTip="{loc:Loc Key=ZView.Nav.Language, Default='Chuyển ngôn ngữ (L)'}">
-                        <TextBlock FontWeight="Bold" FontSize="11">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Text" Value="🇻🇳 VI"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsVietnamese}" Value="False">
-                                            <Setter Property="Text" Value="🇺🇸 EN"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </Button>
-
-                    <!-- Theme Switcher Quick Pill (Light / Dark) -->
-                    <Button Style="{StaticResource CaptionBtnStyle}"
-                            WindowChrome.IsHitTestVisibleInChrome="True"
-                            Command="{Binding ToggleThemeCommand}"
-                            ToolTip="{loc:Loc Key=ZView.Nav.Theme, Default='Chuyển giao diện Sáng/Tối (T)'}">
-                        <TextBlock FontSize="12">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Text" Value="☀️"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsDarkMode}" Value="True">
-                                            <Setter Property="Text" Value="🌙"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </Button>
-
-                    <!-- Skin Studio Palette -->
-                    <Button Style="{StaticResource CaptionBtnStyle}"
-                            WindowChrome.IsHitTestVisibleInChrome="True"
-                            Command="{Binding OpenSkinStudioCommand}"
-                            ToolTip="{loc:Loc Key=ZView.Nav.SkinStudio, Default='Bảng màu Skin Studio'}">
-                        <TextBlock Text="🎨" FontSize="11"/>
-                    </Button>
-
-                    <Rectangle Width="1" Height="16" Fill="{DynamicResource ZeroUI.BorderSubtle}" Margin="2,0"/>
+                    <Rectangle Width="1" Height="16" Fill="{DynamicResource ZeroUI.BorderSubtle}" Margin="4,0"/>
 
                     <Button Style="{StaticResource CaptionBtnStyle}" Click="BtnMinimize_Click" ToolTip="Minimize">
                         <TextBlock Text="─" FontSize="11" Margin="0,0,0,2"/>
@@ -659,6 +613,27 @@
                                 <DockPanel Margin="0,0,0,4">
                                     <CheckBox IsChecked="{Binding IsPixelGridEnabled}" Content="{loc:Loc Key=ZView.Settings.PixelGrid, Default='Lưới điểm ảnh (Grid)'}" Foreground="{DynamicResource ZeroUI.TextPrimary}" FontSize="12" VerticalAlignment="Center"/>
                                 </DockPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Theme & Appearance Group -->
+                        <TextBlock Text="{loc:Loc Key=ZView.Settings.ThemeGroup, Default='GIAO DIỆN &amp; MÀU SẮC'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" Margin="0,0,0,8"/>
+                        <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                            <StackPanel>
+                                <DockPanel Margin="0,0,0,10">
+                                    <CheckBox IsChecked="{Binding IsDarkMode}" Content="{loc:Loc Key=ZView.Settings.DarkMode, Default='Chế độ nền tối (Dark Theme)'}" Foreground="{DynamicResource ZeroUI.TextPrimary}" FontSize="12" VerticalAlignment="Center"/>
+                                </DockPanel>
+                                <DockPanel Margin="0,0,0,10">
+                                    <CheckBox IsChecked="{Binding IsVietnamese}" Content="{loc:Loc Key=ZView.Settings.VietnameseLang, Default='Ngôn ngữ Tiếng Việt (🇻🇳)'}" Foreground="{DynamicResource ZeroUI.TextPrimary}" FontSize="12" VerticalAlignment="Center"/>
+                                </DockPanel>
+                                <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding OpenSkinStudioCommand}"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                        Padding="10,6" Margin="0,4,0,0" ToolTip="Tùy chỉnh bảng màu giao diện nâng cao">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="🎨 " FontSize="12"/>
+                                        <TextBlock Text="{loc:Loc Key=ZView.Nav.SkinStudio, Default='Bảng Màu Skin Studio...'}" FontSize="11" Foreground="{DynamicResource ZeroUI.TextPrimary}"/>
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
                     </StackPanel>
