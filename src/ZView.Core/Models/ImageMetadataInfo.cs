@@ -35,8 +35,11 @@ namespace ZView.Core.Models
         public string Iso { get; set; } = string.Empty;
         public string FocalLength { get; set; } = string.Empty;
         public string ExposureBias { get; set; } = string.Empty;
-        public string MeteringMode { get; set; } = string.Empty;
-        public string Flash { get; set; } = string.Empty;
         public int Orientation { get; set; } = 1;
+        // Telemetry & Hardware Engine Info
+        public double DecodeLatencyMs { get; set; }
+        public string DecodeEngineInfo { get; set; } = "ZeroSystem · Permissive Kernel I/O";
     }
 }
+
+

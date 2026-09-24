@@ -80,6 +80,26 @@ namespace ZView.Core.Services
             _maxMemoryBytes = Math.Max(1024, maxMemoryBytes);
         }
 
+        /// <summary>
+        /// Creates an adaptive cache sized automatically according to host physical RAM and hardware capability.
+        /// </summary>
+        public static ImageCacheService CreateAdaptive(int capacity = 24)
+        {
+            long budget = 512 * 1024 * 1024;
+            try
+            {
+                var mem = ZeroSystem.HardwareTelemetry.GetMemoryInfo();
+                if (mem.TotalPhysicalBytes > 0)
+                {
+                    // Allocate up to 1/8th of total physical RAM, capped between 128MB and 1.5GB
+                    budget = (long)Math.Min(1536L * 1024 * 1024, mem.TotalPhysicalBytes / 8);
+                    budget = Math.Max(128L * 1024 * 1024, budget);
+                }
+            }
+            catch { }
+            return new ImageCacheService(capacity, budget);
+        }
+
 
         public bool TryGet(string filePath, out BitmapSource? bitmap)
         {

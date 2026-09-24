@@ -5,13 +5,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ZeroPrimitives.Diagnostics;
+using ZeroSystem;
 using ZView.Core.Models;
 using ZView.Core.Utils;
 
 namespace ZView.Core.Services
 {
     /// <summary>
-    /// Enterprise multi-format image loader using WIC and hardware acceleration.
+    /// Enterprise multi-format image loader using ZeroSystem sovereign permissive streams and WIC hardware acceleration.
     /// Provides zero-lock file access, EXIF auto-rotation, and thread-safe frozen bitmaps.
     /// </summary>
     public class ImageLoaderService : IImageLoaderService
@@ -42,8 +44,8 @@ namespace ZView.Core.Services
                 {
                     ct.ThrowIfCancellationRequested();
 
-                    // Zero-lock file streaming
-                    using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 64 * 1024);
+                    // Zero-lock sovereign stream via ZeroSystem UnsafeFileStreamFactory
+                    using var fileStream = UnsafeFileStreamFactory.OpenPermissiveReadStream(filePath, bufferSize: 64 * 1024);
                     using var memoryStream = new MemoryStream((int)fileStream.Length);
                     fileStream.CopyTo(memoryStream);
                     memoryStream.Position = 0;
@@ -114,7 +116,7 @@ namespace ZView.Core.Services
                 {
                     ct.ThrowIfCancellationRequested();
 
-                    using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    using var fileStream = UnsafeFileStreamFactory.OpenPermissiveReadStream(filePath, bufferSize: 16 * 1024);
                     using var memoryStream = new MemoryStream();
                     fileStream.CopyTo(memoryStream);
                     memoryStream.Position = 0;
@@ -138,17 +140,23 @@ namespace ZView.Core.Services
 
         public ImageMetadataInfo ExtractMetadata(string filePath)
         {
+            var sw = ValueStopwatch.StartNew();
             try
             {
-                using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var stream = UnsafeFileStreamFactory.OpenPermissiveReadStream(filePath, bufferSize: 16 * 1024);
                 var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.None);
                 var frame = decoder.Frames.Count > 0 ? decoder.Frames[0] : null;
-                return ExifMetadataReader.ReadMetadata(filePath, frame);
+                var info = ExifMetadataReader.ReadMetadata(filePath, frame);
+                info.DecodeLatencyMs = Math.Round(sw.GetElapsedTime().TotalMilliseconds, 2);
+                return info;
             }
             catch
             {
-                return ExifMetadataReader.ReadMetadata(filePath, null);
+                var info = ExifMetadataReader.ReadMetadata(filePath, null);
+                info.DecodeLatencyMs = Math.Round(sw.GetElapsedTime().TotalMilliseconds, 2);
+                return info;
             }
+
         }
 
         private static BitmapSource ApplyOrientation(BitmapSource source, int orientation)

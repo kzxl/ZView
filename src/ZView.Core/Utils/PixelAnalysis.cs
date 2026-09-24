@@ -1,12 +1,13 @@
 using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ZeroPrimitives.Buffers;
 
 namespace ZView.Core.Utils
 {
     /// <summary>
     /// High-performance pixel telemetry and image analysis algorithms for ZView.
-    /// Pure inspection algorithms (0ms latency, zero GC heap allocation where possible).
+    /// Pure inspection algorithms leveraging ZeroPrimitives FastHex and Span arithmetic (0ms latency, zero GC heap allocation).
     /// </summary>
     public static class PixelAnalysis
     {
@@ -32,7 +33,10 @@ namespace ZView.Core.Utils
                 G = g;
                 B = b;
                 A = a;
-                Hex = a == 255 ? $"#{r:X2}{g:X2}{b:X2}" : $"#{a:X2}{r:X2}{g:X2}{b:X2}";
+
+                // ZeroPrimitives FastHex encoding
+                Span<byte> hexBytes = a == 255 ? stackalloc byte[3] { r, g, b } : stackalloc byte[4] { a, r, g, b };
+                Hex = "#" + FastHex.ToString(hexBytes, lowercase: false);
 
                 // ITU-R BT.709 standard relative luminance
                 Luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
@@ -117,32 +121,26 @@ namespace ZView.Core.Utils
             {
                 var format = bitmap.Format;
                 int stride = (bitmap.PixelWidth * format.BitsPerPixel + 7) / 8;
-                byte[] pixelData = new byte[4];
+                Span<byte> pixelData = stackalloc byte[4];
 
                 if (format == PixelFormats.Bgra32 || format == PixelFormats.Bgr32 || format == PixelFormats.Pbgra32)
                 {
                     var rect = new System.Windows.Int32Rect(x, y, 1, 1);
-                    bitmap.CopyPixels(rect, pixelData, 4, 0);
-                    byte b = pixelData[0];
-                    byte g = pixelData[1];
-                    byte r = pixelData[2];
-                    byte a = format == PixelFormats.Bgr32 ? (byte)255 : pixelData[3];
+                    byte[] temp = new byte[4];
+                    bitmap.CopyPixels(rect, temp, 4, 0);
+                    byte b = temp[0];
+                    byte g = temp[1];
+                    byte r = temp[2];
+                    byte a = format == PixelFormats.Bgr32 ? (byte)255 : temp[3];
                     return new PixelColorInfo(r, g, b, a);
-                }
-                else if (format == PixelFormats.Rgba64 || format == PixelFormats.Rgb24 || format == PixelFormats.Indexed8 || format == PixelFormats.Gray8)
-                {
-                    // Convert single pixel to Bgr32 format
-                    var cb = new FormatConvertedBitmap(bitmap, PixelFormats.Bgra32, null, 0);
-                    var rect = new System.Windows.Int32Rect(x, y, 1, 1);
-                    cb.CopyPixels(rect, pixelData, 4, 0);
-                    return new PixelColorInfo(pixelData[2], pixelData[1], pixelData[0], pixelData[3]);
                 }
                 else
                 {
                     var cb = new FormatConvertedBitmap(bitmap, PixelFormats.Bgra32, null, 0);
                     var rect = new System.Windows.Int32Rect(x, y, 1, 1);
-                    cb.CopyPixels(rect, pixelData, 4, 0);
-                    return new PixelColorInfo(pixelData[2], pixelData[1], pixelData[0], pixelData[3]);
+                    byte[] temp = new byte[4];
+                    cb.CopyPixels(rect, temp, 4, 0);
+                    return new PixelColorInfo(temp[2], temp[1], temp[0], temp[3]);
                 }
             }
             catch

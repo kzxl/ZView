@@ -11,5 +11,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroUI\src\ZeroUI.Core\ZeroUI.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroPrimitives\src\ZeroPrimitives.Core\ZeroPrimitives.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroSystem\src\ZeroSystem.Core\ZeroSystem.Core.csproj" />
   </ItemGroup>
 </Project>
+

@@ -21,7 +21,7 @@ namespace ZView
             // Composition Root
             var imageLoader = new ImageLoaderService();
             var navigation = new FolderNavigationService(imageLoader);
-            var cache = new ImageCacheService(capacity: 16);
+            var cache = ImageCacheService.CreateAdaptive(capacity: 24);
             var vm = new MainViewModel(imageLoader, navigation, cache);
 
             var mainWindow = new MainWindow(vm);

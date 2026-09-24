@@ -527,9 +527,29 @@
                                 </Grid>
                             </StackPanel>
                         </Border>
+
+                        <!-- Engine & Hardware Telemetry Section -->
+                        <TextBlock Text="HIỆU NĂNG &amp; ENGINE ZERO" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" Margin="0,0,0,8"/>
+                        <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                            <StackPanel>
+                                <DockPanel Margin="0,0,0,6">
+                                    <TextBlock Text="I/O Kernel:" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.DecodeEngineInfo}" HorizontalAlignment="Right" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.Success}"/>
+                                </DockPanel>
+                                <DockPanel Margin="0,0,0,6">
+                                    <TextBlock Text="Decode Latency:" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="{Binding CurrentMetadata.DecodeLatencyMs, StringFormat='{}{0} ms'}" HorizontalAlignment="Right" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.PrimaryAccent}"/>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBlock Text="Color Inspector:" FontSize="10" Foreground="{DynamicResource ZeroUI.TextMuted}"/>
+                                    <TextBlock Text="ZeroPrimitives FastHex + Span" HorizontalAlignment="Right" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource ZeroUI.TextSecondary}"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </ScrollViewer>
             </Border>
+
 
             <!-- Right Slide-In Settings & Display Options Drawer -->
             <Border HorizontalAlignment="Right"
