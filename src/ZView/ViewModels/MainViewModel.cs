@@ -7,12 +7,16 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using ZeroUI.Core.Media;
 using ZView.Core.Models;
 using ZView.Core.Services;
+using ZView.Core.Utils;
 
 namespace ZView.ViewModels
 {
+    /// <summary>
+    /// Pure Ultra-High Performance Image Viewer & Telemetry Inspector ViewModel.
+    /// Strictly handles viewing, zero-latency caching, navigation, and EXIF/pixel inspection.
+    /// </summary>
     public class MainViewModel : ViewModelBase
     {
         private readonly IImageLoaderService _imageLoader;
@@ -21,40 +25,19 @@ namespace ZView.ViewModels
 
         private BitmapSource? _currentImageSource;
         private ImageMetadataInfo? _currentMetadata;
+        private PixelAnalysis.ImageHistogramData? _currentHistogram;
         private bool _isLoading;
         private bool _isFullScreen;
         private bool _isMetadataDrawerOpen;
         private bool _isFilmstripVisible = true;
-        private bool _isColorProbeEnabled = true;
         private bool _isMiniMapEnabled = true;
         private bool _isPixelGridEnabled = true;
-        private bool _isCheckerboardVisible = true;
         private double _currentZoom = 1.0;
         private string _statusText = "Ready";
         private string _osdText = string.Empty;
         private bool _isOsdVisible;
         private CancellationTokenSource? _loadCts;
         private CancellationTokenSource? _prefetchCts;
-
-        // Interactive Specialized Modes
-        private bool _isAnnotationMode;
-        private AnnotationShapeType _annotationTool = AnnotationShapeType.BoundingBox;
-        private AnnotationSeverity _annotationSeverity = AnnotationSeverity.Defect;
-
-        private bool _isMeasurementMode;
-        private MeasurementMode _measurementMode = MeasurementMode.LinearDistance;
-        private MeasurementUnit _measurementUnit = MeasurementUnit.Millimeter;
-        private double _calibrationFactor = 1.0;
-
-        private bool _isWatermarkMode;
-        private string _watermarkText = "CONFIDENTIAL · {User} · {Date}";
-        private WatermarkPlacement _watermarkPlacement = WatermarkPlacement.DiagonalTiled;
-        private double _watermarkOpacity = 0.25;
-
-        private bool _isDeskewMode;
-        private double _deskewAngle = 0.0;
-        private bool _isBinarizationEnabled;
-        private byte _binarizationThreshold = 128;
 
         // Theme and Localization
         private bool _isDarkMode = false;
@@ -89,16 +72,36 @@ namespace ZView.ViewModels
             }
         }
 
+        private bool _showThumbnailFileName = true;
+        private double _thumbnailCardSize = 78.0;
+        private bool _isSettingsDrawerOpen = false;
+
+        public bool HasImage => _currentImageSource != null;
+        public bool HasNoImage => _currentImageSource == null;
+
         public BitmapSource? CurrentImageSource
         {
             get => _currentImageSource;
-            set => SetProperty(ref _currentImageSource, value);
+            set
+            {
+                if (SetProperty(ref _currentImageSource, value))
+                {
+                    OnPropertyChanged(nameof(HasImage));
+                    OnPropertyChanged(nameof(HasNoImage));
+                }
+            }
         }
 
         public ImageMetadataInfo? CurrentMetadata
         {
             get => _currentMetadata;
             set => SetProperty(ref _currentMetadata, value);
+        }
+
+        public PixelAnalysis.ImageHistogramData? CurrentHistogram
+        {
+            get => _currentHistogram;
+            set => SetProperty(ref _currentHistogram, value);
         }
 
         public bool IsLoading
@@ -116,7 +119,25 @@ namespace ZView.ViewModels
         public bool IsMetadataDrawerOpen
         {
             get => _isMetadataDrawerOpen;
-            set => SetProperty(ref _isMetadataDrawerOpen, value);
+            set
+            {
+                if (SetProperty(ref _isMetadataDrawerOpen, value) && value)
+                {
+                    IsSettingsDrawerOpen = false;
+                }
+            }
+        }
+
+        public bool IsSettingsDrawerOpen
+        {
+            get => _isSettingsDrawerOpen;
+            set
+            {
+                if (SetProperty(ref _isSettingsDrawerOpen, value) && value)
+                {
+                    IsMetadataDrawerOpen = false;
+                }
+            }
         }
 
         public bool IsFilmstripVisible
@@ -125,10 +146,16 @@ namespace ZView.ViewModels
             set => SetProperty(ref _isFilmstripVisible, value);
         }
 
-        public bool IsColorProbeEnabled
+        public bool ShowThumbnailFileName
         {
-            get => _isColorProbeEnabled;
-            set => SetProperty(ref _isColorProbeEnabled, value);
+            get => _showThumbnailFileName;
+            set => SetProperty(ref _showThumbnailFileName, value);
+        }
+
+        public double ThumbnailCardSize
+        {
+            get => _thumbnailCardSize;
+            set => SetProperty(ref _thumbnailCardSize, Math.Max(48.0, Math.Min(160.0, value)));
         }
 
         public bool IsMiniMapEnabled
@@ -141,12 +168,6 @@ namespace ZView.ViewModels
         {
             get => _isPixelGridEnabled;
             set => SetProperty(ref _isPixelGridEnabled, value);
-        }
-
-        public bool IsCheckerboardVisible
-        {
-            get => _isCheckerboardVisible;
-            set => SetProperty(ref _isCheckerboardVisible, value);
         }
 
         public double CurrentZoom
@@ -181,130 +202,6 @@ namespace ZView.ViewModels
             set => SetProperty(ref _isOsdVisible, value);
         }
 
-        #region Interactive Modes Properties
-
-        public bool IsAnnotationMode
-        {
-            get => _isAnnotationMode;
-            set
-            {
-                if (SetProperty(ref _isAnnotationMode, value) && value)
-                {
-                    IsMeasurementMode = false;
-                    IsDeskewMode = false;
-                    ShowOsd("✏️ Annotation Mode Activated");
-                }
-            }
-        }
-
-        public AnnotationShapeType AnnotationTool
-        {
-            get => _annotationTool;
-            set => SetProperty(ref _annotationTool, value);
-        }
-
-        public AnnotationSeverity AnnotationSeverity
-        {
-            get => _annotationSeverity;
-            set => SetProperty(ref _annotationSeverity, value);
-        }
-
-        public bool IsMeasurementMode
-        {
-            get => _isMeasurementMode;
-            set
-            {
-                if (SetProperty(ref _isMeasurementMode, value) && value)
-                {
-                    IsAnnotationMode = false;
-                    IsDeskewMode = false;
-                    ShowOsd("📐 Optical Caliper & Measurement Mode Activated");
-                }
-            }
-        }
-
-        public MeasurementMode MeasurementMode
-        {
-            get => _measurementMode;
-            set => SetProperty(ref _measurementMode, value);
-        }
-
-        public MeasurementUnit MeasurementUnit
-        {
-            get => _measurementUnit;
-            set => SetProperty(ref _measurementUnit, value);
-        }
-
-        public double CalibrationFactor
-        {
-            get => _calibrationFactor;
-            set => SetProperty(ref _calibrationFactor, Math.Max(0.000001, value));
-        }
-
-        public bool IsWatermarkMode
-        {
-            get => _isWatermarkMode;
-            set
-            {
-                if (SetProperty(ref _isWatermarkMode, value))
-                {
-                    ShowOsd(value ? "🏷️ Watermark Overlay Enabled" : "Watermark Disabled");
-                }
-            }
-        }
-
-        public string WatermarkText
-        {
-            get => _watermarkText;
-            set => SetProperty(ref _watermarkText, value);
-        }
-
-        public WatermarkPlacement WatermarkPlacement
-        {
-            get => _watermarkPlacement;
-            set => SetProperty(ref _watermarkPlacement, value);
-        }
-
-        public double WatermarkOpacity
-        {
-            get => _watermarkOpacity;
-            set => SetProperty(ref _watermarkOpacity, Math.Max(0.01, Math.Min(1.0, value)));
-        }
-
-        public bool IsDeskewMode
-        {
-            get => _isDeskewMode;
-            set
-            {
-                if (SetProperty(ref _isDeskewMode, value) && value)
-                {
-                    IsAnnotationMode = false;
-                    IsMeasurementMode = false;
-                    ShowOsd("📄 Document Deskew & OCR Preprocessing Activated");
-                }
-            }
-        }
-
-        public double DeskewAngle
-        {
-            get => _deskewAngle;
-            set => SetProperty(ref _deskewAngle, Math.Max(-45.0, Math.Min(45.0, value)));
-        }
-
-        public bool IsBinarizationEnabled
-        {
-            get => _isBinarizationEnabled;
-            set => SetProperty(ref _isBinarizationEnabled, value);
-        }
-
-        public byte BinarizationThreshold
-        {
-            get => _binarizationThreshold;
-            set => SetProperty(ref _binarizationThreshold, value);
-        }
-
-        #endregion
-
         public ImageFileItem? CurrentItem => _navigation.CurrentItem;
         public int CurrentIndex => _navigation.CurrentIndex + 1;
         public int TotalCount => _navigation.TotalCount;
@@ -322,11 +219,8 @@ namespace ZView.ViewModels
         public ICommand SelectItemCommand { get; }
         public ICommand ToggleFullScreenCommand { get; }
         public ICommand ToggleMetadataCommand { get; }
+        public ICommand ToggleSettingsCommand { get; }
         public ICommand ToggleFilmstripCommand { get; }
-        public ICommand ToggleAnnotationCommand { get; }
-        public ICommand ToggleMeasurementCommand { get; }
-        public ICommand ToggleWatermarkCommand { get; }
-        public ICommand ToggleDeskewCommand { get; }
         public ICommand ToggleThemeCommand { get; }
         public ICommand ToggleLanguageCommand { get; }
         public ICommand OpenSkinStudioCommand { get; }
@@ -360,11 +254,8 @@ namespace ZView.ViewModels
 
             ToggleFullScreenCommand = new RelayCommand(() => IsFullScreen = !IsFullScreen);
             ToggleMetadataCommand = new RelayCommand(() => IsMetadataDrawerOpen = !IsMetadataDrawerOpen);
+            ToggleSettingsCommand = new RelayCommand(() => IsSettingsDrawerOpen = !IsSettingsDrawerOpen);
             ToggleFilmstripCommand = new RelayCommand(() => IsFilmstripVisible = !IsFilmstripVisible);
-            ToggleAnnotationCommand = new RelayCommand(() => IsAnnotationMode = !IsAnnotationMode);
-            ToggleMeasurementCommand = new RelayCommand(() => IsMeasurementMode = !IsMeasurementMode);
-            ToggleWatermarkCommand = new RelayCommand(() => IsWatermarkMode = !IsWatermarkMode);
-            ToggleDeskewCommand = new RelayCommand(() => IsDeskewMode = !IsDeskewMode);
 
             ToggleThemeCommand = new RelayCommand(() => IsDarkMode = !IsDarkMode);
             ToggleLanguageCommand = new RelayCommand(() => IsVietnamese = !IsVietnamese);
@@ -415,7 +306,7 @@ namespace ZView.ViewModels
             var dlg = new OpenFileDialog
             {
                 Title = "Open Image — ZView",
-                Filter = "All Supported Images|*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.webp;*.ico;*.tiff;*.tif;*.wdp;*.hdp;*.jxr;*.svg;*.tga|All Files (*.*)|*.*",
+                Filter = "All Supported Images|*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.webp;*.ico;*.tiff;*.tif;*.wdp;*.hdp;*.jxr;*.svg;*.tga;*.cur;*.dds;*.heic;*.avif|All Files (*.*)|*.*",
                 CheckFileExists = true
             };
 
@@ -481,6 +372,7 @@ namespace ZView.ViewModels
             {
                 CurrentImageSource = null;
                 CurrentMetadata = null;
+                CurrentHistogram = null;
                 StatusText = "No images found";
                 return;
             }
@@ -529,7 +421,7 @@ namespace ZView.ViewModels
             _prefetchCts = new CancellationTokenSource();
             var ct = _prefetchCts.Token;
 
-            var neighbors = _navigation.GetNeighborPaths(forwardCount: 2, backwardCount: 2);
+            var neighbors = _navigation.GetNeighborPaths(forwardCount: 3, backwardCount: 2);
             _ = Task.Run(() => _cache.PrefetchAsync(neighbors, _imageLoader, ct), ct);
         }
 
@@ -538,9 +430,12 @@ namespace ZView.ViewModels
             _ = Task.Run(() =>
             {
                 var meta = _imageLoader.ExtractMetadata(item.FilePath);
+                var histogram = PixelAnalysis.CalculateHistogram(bitmap);
+
                 Application.Current?.Dispatcher.Invoke(() =>
                 {
                     CurrentMetadata = meta;
+                    CurrentHistogram = histogram;
                     StatusText = $"{CurrentIndex} / {TotalCount}  |  {bitmap.PixelWidth} × {bitmap.PixelHeight} ({meta.AspectRatio})  |  {meta.Megapixels}  |  {item.FormattedSize}  |  {item.Extension.ToUpperInvariant().TrimStart('.')}";
                 });
             });

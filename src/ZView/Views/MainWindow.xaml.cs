@@ -4,13 +4,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using Microsoft.Win32;
-using ZeroUI.Core.Media;
 using ZView.Core.Models;
 using ZView.ViewModels;
 
 namespace ZView.Views
 {
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// Pure Ultra-High Performance Image Viewer & Telemetry Inspector.
+    /// </summary>
     public partial class MainWindow : Window
     {
         private readonly MainViewModel _vm;
@@ -31,7 +33,7 @@ namespace ZView.Views
                 }
                 else if (e.PropertyName == nameof(MainViewModel.CurrentImageSource))
                 {
-                    // Center and fit new image
+                    // Center and fit new image on viewport
                     ImageViewer.FitToWindow();
                     if (_vm.CurrentItem != null)
                     {
@@ -41,7 +43,7 @@ namespace ZView.Views
             };
         }
 
-        #region Window Chrome Buttons
+        #region Window Caption Buttons
 
         private void BtnMinimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
@@ -100,19 +102,11 @@ namespace ZView.Views
 
         #endregion
 
-        #region Keyboard Ergonomics
+        #region Keyboard Navigation & Shortcuts
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            // Fullscreen toggle
-            if (e.Key == Key.F11)
-            {
-                _vm.ToggleFullScreenCommand.Execute(null);
-                e.Handled = true;
-                return;
-            }
-
-            // Escape closes fullscreen, modes or side drawer
+            // Escape closes fullscreen or open drawers
             if (e.Key == Key.Escape)
             {
                 if (_vm.IsFullScreen)
@@ -127,9 +121,12 @@ namespace ZView.Views
                     e.Handled = true;
                     return;
                 }
-                if (_vm.IsAnnotationMode) { _vm.IsAnnotationMode = false; e.Handled = true; return; }
-                if (_vm.IsMeasurementMode) { _vm.IsMeasurementMode = false; e.Handled = true; return; }
-                if (_vm.IsDeskewMode) { _vm.IsDeskewMode = false; e.Handled = true; return; }
+                if (_vm.IsSettingsDrawerOpen)
+                {
+                    _vm.IsSettingsDrawerOpen = false;
+                    e.Handled = true;
+                    return;
+                }
             }
 
             // Ctrl combinations
@@ -142,10 +139,6 @@ namespace ZView.Views
                             _vm.OpenFolderCommand.Execute(null);
                         else
                             _vm.OpenFileCommand.Execute(null);
-                        e.Handled = true;
-                        return;
-                    case Key.S:
-                        SaveCurrentActiveExport();
                         e.Handled = true;
                         return;
                     case Key.D0:
@@ -183,16 +176,18 @@ namespace ZView.Views
                 }
             }
 
-            // Single key shortcuts
+            // Single key shortcuts for pure image navigation & view modes
             switch (e.Key)
             {
                 case Key.Right:
                 case Key.Space:
+                case Key.PageDown:
                     if (_vm.NextCommand.CanExecute(null)) _vm.NextCommand.Execute(null);
                     e.Handled = true;
                     break;
                 case Key.Left:
                 case Key.Back:
+                case Key.PageUp:
                     if (_vm.PreviousCommand.CanExecute(null)) _vm.PreviousCommand.Execute(null);
                     e.Handled = true;
                     break;
@@ -204,24 +199,28 @@ namespace ZView.Views
                     if (_vm.LastCommand.CanExecute(null)) _vm.LastCommand.Execute(null);
                     e.Handled = true;
                     break;
-                case Key.A:
-                    _vm.ToggleAnnotationCommand.Execute(null);
+                case Key.F:
+                    ImageViewer.FitToWindow();
                     e.Handled = true;
                     break;
-                case Key.M:
-                    _vm.ToggleMeasurementCommand.Execute(null);
+                case Key.D1:
+                    ImageViewer.ActualSize();
                     e.Handled = true;
                     break;
-                case Key.W:
-                    _vm.ToggleWatermarkCommand.Execute(null);
+                case Key.R:
+                    ImageViewer.RotateClockwise();
                     e.Handled = true;
                     break;
-                case Key.D:
-                    _vm.ToggleDeskewCommand.Execute(null);
+                case Key.H:
+                    ImageViewer.ToggleFlipHorizontal();
                     e.Handled = true;
                     break;
                 case Key.I:
                     _vm.ToggleMetadataCommand.Execute(null);
+                    e.Handled = true;
+                    break;
+                case Key.S:
+                    _vm.ToggleSettingsCommand.Execute(null);
                     e.Handled = true;
                     break;
                 case Key.B:
@@ -230,10 +229,6 @@ namespace ZView.Views
                     break;
                 case Key.T:
                     _vm.ToggleThemeCommand.Execute(null);
-                    e.Handled = true;
-                    break;
-                case Key.L:
-                    _vm.ToggleLanguageCommand.Execute(null);
                     e.Handled = true;
                     break;
                 case Key.Delete:
@@ -250,12 +245,16 @@ namespace ZView.Views
                     ImageViewer.ZoomOut();
                     e.Handled = true;
                     break;
+                case Key.F11:
+                    _vm.ToggleFullScreenCommand.Execute(null);
+                    e.Handled = true;
+                    break;
             }
         }
 
         #endregion
 
-        #region Toolbar Action Handlers
+        #region Toolbar Quick Handlers
 
         private void BtnFitToWindow_Click(object sender, RoutedEventArgs e) => ImageViewer.FitToWindow();
         private void BtnActualSize_Click(object sender, RoutedEventArgs e) => ImageViewer.ActualSize();
@@ -269,96 +268,6 @@ namespace ZView.Views
             if (FilmstripList.SelectedItem is ImageFileItem item && item != _vm.CurrentItem)
             {
                 _vm.SelectItemCommand.Execute(item);
-            }
-        }
-
-        #endregion
-
-        #region Contextual Sub-Bar Handlers
-
-        // Annotation Tools
-        private void BtnSetToolBox_Click(object sender, RoutedEventArgs e) => _vm.AnnotationTool = AnnotationShapeType.BoundingBox;
-        private void BtnSetToolArrow_Click(object sender, RoutedEventArgs e) => _vm.AnnotationTool = AnnotationShapeType.Arrow;
-        private void BtnSetToolEllipse_Click(object sender, RoutedEventArgs e) => _vm.AnnotationTool = AnnotationShapeType.Ellipse;
-        private void BtnSetToolCallout_Click(object sender, RoutedEventArgs e) => _vm.AnnotationTool = AnnotationShapeType.TextCallout;
-        private void BtnSetToolBlur_Click(object sender, RoutedEventArgs e) => _vm.AnnotationTool = AnnotationShapeType.BlurPixelate;
-
-        private void BtnSetSeverityOk_Click(object sender, RoutedEventArgs e) => _vm.AnnotationSeverity = AnnotationSeverity.Ok;
-        private void BtnSetSeverityWarning_Click(object sender, RoutedEventArgs e) => _vm.AnnotationSeverity = AnnotationSeverity.Warning;
-        private void BtnSetSeverityDefect_Click(object sender, RoutedEventArgs e) => _vm.AnnotationSeverity = AnnotationSeverity.Defect;
-        private void BtnSetSeverityCritical_Click(object sender, RoutedEventArgs e) => _vm.AnnotationSeverity = AnnotationSeverity.Critical;
-
-        private void BtnSaveAnnotatedImage_Click(object sender, RoutedEventArgs e)
-        {
-            if (_vm.CurrentImageSource == null) return;
-            var burned = AnnotationLayer.BurnAnnotationsToBitmap(_vm.CurrentImageSource);
-            SaveBitmapToFile(burned, "annotated");
-        }
-
-        // Measurement Modes & Units
-        private void BtnMeasureLinear_Click(object sender, RoutedEventArgs e) => _vm.MeasurementMode = MeasurementMode.LinearDistance;
-        private void BtnMeasureAngle_Click(object sender, RoutedEventArgs e) => _vm.MeasurementMode = MeasurementMode.ThreePointAngle;
-        private void BtnUnitMm_Click(object sender, RoutedEventArgs e) => _vm.MeasurementUnit = MeasurementUnit.Millimeter;
-        private void BtnUnitUm_Click(object sender, RoutedEventArgs e) => _vm.MeasurementUnit = MeasurementUnit.Micrometer;
-        private void BtnUnitPx_Click(object sender, RoutedEventArgs e) => _vm.MeasurementUnit = MeasurementUnit.Pixel;
-
-        // Watermark Export
-        private void BtnSaveWatermarkedImage_Click(object sender, RoutedEventArgs e)
-        {
-            if (_vm.CurrentImageSource == null) return;
-            var burned = WatermarkLayer.BurnWatermarkToBitmap(_vm.CurrentImageSource);
-            SaveBitmapToFile(burned, "watermarked");
-        }
-
-        // Deskew Export
-        private void BtnResetDeskew_Click(object sender, RoutedEventArgs e) => _vm.DeskewAngle = 0.0;
-
-        private void BtnExportDeskewedImage_Click(object sender, RoutedEventArgs e)
-        {
-            var processed = DeskewLayer.GetProcessedBitmap();
-            if (processed != null) SaveBitmapToFile(processed, "deskewed");
-        }
-
-        private void SaveCurrentActiveExport()
-        {
-            if (_vm.IsAnnotationMode) BtnSaveAnnotatedImage_Click(this, new RoutedEventArgs());
-            else if (_vm.IsWatermarkMode) BtnSaveWatermarkedImage_Click(this, new RoutedEventArgs());
-            else if (_vm.IsDeskewMode) BtnExportDeskewedImage_Click(this, new RoutedEventArgs());
-            else if (_vm.CurrentImageSource != null) SaveBitmapToFile(_vm.CurrentImageSource, "export");
-        }
-
-        private void SaveBitmapToFile(BitmapSource bitmap, string suffix)
-        {
-            string origName = _vm.CurrentItem?.FileName ?? "image.png";
-            string baseName = Path.GetFileNameWithoutExtension(origName);
-
-            var sfd = new SaveFileDialog
-            {
-                Title = "Export Image — ZView",
-                FileName = $"{baseName}_{suffix}.png",
-                Filter = "PNG Image (*.png)|*.png|JPEG Image (*.jpg)|*.jpg|Bitmap Image (*.bmp)|*.bmp"
-            };
-
-            if (sfd.ShowDialog() == true)
-            {
-                try
-                {
-                    using var stream = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write);
-                    BitmapEncoder encoder = Path.GetExtension(sfd.FileName).ToLowerInvariant() switch
-                    {
-                        ".jpg" or ".jpeg" => new JpegBitmapEncoder { QualityLevel = 95 },
-                        ".bmp" => new BmpBitmapEncoder(),
-                        _ => new PngBitmapEncoder()
-                    };
-
-                    encoder.Frames.Add(BitmapFrame.Create(bitmap));
-                    encoder.Save(stream);
-                    _vm.ShowOsd($"💾 Exported: {Path.GetFileName(sfd.FileName)}");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to save image: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
             }
         }
 

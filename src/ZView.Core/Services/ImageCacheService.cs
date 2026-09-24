@@ -7,8 +7,8 @@ using System.Windows.Media.Imaging;
 namespace ZView.Core.Services
 {
     /// <summary>
-    /// Thread-safe LRU memory cache with background pre-fetching engine.
-    /// Eliminates IO bottlenecks and frame drops during fast image flipping.
+    /// Thread-safe LRU memory cache with memory-budget aware eviction and background pre-fetching engine.
+    /// Eliminates IO bottlenecks and frame drops during high-speed image flipping while strictly bounding RAM usage.
     /// </summary>
     public class ImageCacheService : IImageCacheService
     {
@@ -16,11 +16,14 @@ namespace ZView.Core.Services
         private readonly Dictionary<string, LinkedListNode<CacheItem>> _map = new(StringComparer.OrdinalIgnoreCase);
         private readonly LinkedList<CacheItem> _lruList = new();
         private int _capacity;
+        private long _maxMemoryBytes;
+        private long _currentMemoryBytes;
 
         private class CacheItem
         {
             public string FilePath { get; set; } = string.Empty;
             public BitmapSource Bitmap { get; set; } = null!;
+            public long SizeBytes { get; set; }
         }
 
         public int Capacity
@@ -34,8 +37,32 @@ namespace ZView.Core.Services
                 lock (_syncLock)
                 {
                     _capacity = Math.Max(2, value);
-                    TrimToCapacity();
+                    TrimToLimits();
                 }
+            }
+        }
+
+        public long MaxMemoryBytes
+        {
+            get
+            {
+                lock (_syncLock) return _maxMemoryBytes;
+            }
+            set
+            {
+                lock (_syncLock)
+                {
+                    _maxMemoryBytes = Math.Max(1024, value);
+                    TrimToLimits();
+                }
+            }
+        }
+
+        public long MemoryUsageBytes
+        {
+            get
+            {
+                lock (_syncLock) return _currentMemoryBytes;
             }
         }
 
@@ -47,10 +74,12 @@ namespace ZView.Core.Services
             }
         }
 
-        public ImageCacheService(int capacity = 16)
+        public ImageCacheService(int capacity = 16, long maxMemoryBytes = 512 * 1024 * 1024) // Default 512MB RAM budget
         {
             _capacity = Math.Max(2, capacity);
+            _maxMemoryBytes = Math.Max(1024, maxMemoryBytes);
         }
+
 
         public bool TryGet(string filePath, out BitmapSource? bitmap)
         {
@@ -80,22 +109,34 @@ namespace ZView.Core.Services
         {
             if (string.IsNullOrWhiteSpace(filePath) || bitmap == null) return;
 
+            long sizeBytes = EstimateBitmapSize(bitmap);
+
             lock (_syncLock)
             {
                 if (_map.TryGetValue(filePath, out var existingNode))
                 {
+                    _currentMemoryBytes -= existingNode.Value.SizeBytes;
                     existingNode.Value.Bitmap = bitmap;
+                    existingNode.Value.SizeBytes = sizeBytes;
+                    _currentMemoryBytes += sizeBytes;
+
                     _lruList.Remove(existingNode);
                     _lruList.AddFirst(existingNode);
                 }
                 else
                 {
-                    var item = new CacheItem { FilePath = filePath, Bitmap = bitmap };
+                    var item = new CacheItem
+                    {
+                        FilePath = filePath,
+                        Bitmap = bitmap,
+                        SizeBytes = sizeBytes
+                    };
                     var newNode = new LinkedListNode<CacheItem>(item);
                     _lruList.AddFirst(newNode);
                     _map[filePath] = newNode;
+                    _currentMemoryBytes += sizeBytes;
 
-                    TrimToCapacity();
+                    TrimToLimits();
                 }
             }
         }
@@ -108,6 +149,7 @@ namespace ZView.Core.Services
             {
                 if (_map.TryGetValue(filePath, out var node))
                 {
+                    _currentMemoryBytes -= node.Value.SizeBytes;
                     _lruList.Remove(node);
                     _map.Remove(filePath);
                 }
@@ -120,6 +162,7 @@ namespace ZView.Core.Services
             {
                 _lruList.Clear();
                 _map.Clear();
+                _currentMemoryBytes = 0;
             }
         }
 
@@ -149,14 +192,31 @@ namespace ZView.Core.Services
             }
         }
 
-        private void TrimToCapacity()
+        private void TrimToLimits()
         {
-            while (_map.Count > _capacity && _lruList.Last != null)
+            // Evict while exceeding item capacity OR exceeding RAM budget (preserving minimum 1 item)
+            while ((_map.Count > _capacity || _currentMemoryBytes > _maxMemoryBytes) && _lruList.Count > 1 && _lruList.Last != null)
             {
                 var lruNode = _lruList.Last;
+                _currentMemoryBytes -= lruNode.Value.SizeBytes;
                 _lruList.RemoveLast();
                 _map.Remove(lruNode.Value.FilePath);
             }
         }
+
+        private static long EstimateBitmapSize(BitmapSource bitmap)
+        {
+            try
+            {
+                int bpp = bitmap.Format.BitsPerPixel;
+                if (bpp <= 0) bpp = 32;
+                return (long)bitmap.PixelWidth * bitmap.PixelHeight * bpp / 8;
+            }
+            catch
+            {
+                return 4 * 1024 * 1024; // 4MB default estimation
+            }
+        }
     }
 }
+

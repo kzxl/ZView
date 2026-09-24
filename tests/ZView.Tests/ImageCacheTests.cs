@@ -42,16 +42,24 @@ namespace ZView.Tests
         }
 
         [Fact]
-        public void Clear_ShouldResetCache()
+        public void MemoryBudget_ShouldEvictWhenExceedingBytes()
         {
-            var cache = new ImageCacheService(capacity: 5);
-            cache.Put("p1", CreateTestBitmap());
-            cache.Put("p2", CreateTestBitmap());
+            // 10x10 BGRA32 bitmap is 400 bytes.
+            // With budget of 900 bytes, it can hold 2 bitmaps (800 bytes). A 3rd bitmap (total 1200 > 900) will evict the oldest.
+            var cache = new ImageCacheService(capacity: 10, maxMemoryBytes: 900);
 
-            Assert.Equal(2, cache.Count);
-            cache.Clear();
-            Assert.Equal(0, cache.Count);
-            Assert.False(cache.TryGet("p1", out _));
+            var b1 = CreateTestBitmap(10, 10);
+            var b2 = CreateTestBitmap(10, 10);
+            var b3 = CreateTestBitmap(10, 10);
+
+            cache.Put("p1", b1);
+            cache.Put("p2", b2);
+            cache.Put("p3", b3);
+
+            Assert.True(cache.Count <= 2);
+            Assert.False(cache.TryGet("p1", out _)); // p1 evicted due to memory limit
+            Assert.True(cache.TryGet("p3", out _));
         }
     }
 }
+

@@ -45,7 +45,18 @@ namespace ZView.Services
                 ["ZView.Nav.Theme"] = "Chuyển giao diện (Sáng / Tối)",
                 ["ZView.Nav.SkinStudio"] = "Bảng màu Skin Studio",
                 ["ZView.Nav.Language"] = "Ngôn ngữ / Language (VI / EN)",
+                ["ZView.Nav.Settings"] = "Cài đặt & Tùy chọn hiển thị (S)",
                 ["ZView.Nav.Help"] = "Phím tắt & Hướng dẫn (?)",
+
+                // Settings & Options Drawer
+                ["ZView.Settings.Title"] = "CÀI ĐẶT & TÙY CHỌN HIỂN THỊ",
+                ["ZView.Settings.FilmstripGroup"] = "DẢI PHIM THUMBNAIL PHÍA DƯỚI",
+                ["ZView.Settings.ShowFilmstrip"] = "Hiển thị thanh dải phim (B)",
+                ["ZView.Settings.ShowFileName"] = "Hiển thị tên tệp dưới thẻ thumbnail",
+                ["ZView.Settings.ThumbnailSize"] = "Kích thước thẻ thumbnail:",
+                ["ZView.Settings.HudGroup"] = "CÔNG CỤ HỖ TRỢ TRỰC QUAN (HUD)",
+                ["ZView.Settings.MiniMap"] = "Bản đồ điều hướng radar (MiniMap)",
+                ["ZView.Settings.PixelGrid"] = "Lưới điểm ảnh pháp y (Pixel Grid)",
 
                 // Interactive Modes
                 ["ZView.Mode.Annotate"] = "Ghi chú & Đo đạc lỗi (A)",
@@ -145,7 +156,18 @@ namespace ZView.Services
                 ["ZView.Nav.Theme"] = "Toggle Theme (Light / Dark)",
                 ["ZView.Nav.SkinStudio"] = "Skin Studio Palette",
                 ["ZView.Nav.Language"] = "Language / Ngôn ngữ (EN / VI)",
+                ["ZView.Nav.Settings"] = "Settings & Display Options (S)",
                 ["ZView.Nav.Help"] = "Shortcuts & Guide (?)",
+
+                // Settings & Options Drawer
+                ["ZView.Settings.Title"] = "VIEWPORT & DISPLAY SETTINGS",
+                ["ZView.Settings.FilmstripGroup"] = "BOTTOM FILMSTRIP CAROUSEL",
+                ["ZView.Settings.ShowFilmstrip"] = "Show Filmstrip Bar (B)",
+                ["ZView.Settings.ShowFileName"] = "Show file names below thumbnails",
+                ["ZView.Settings.ThumbnailSize"] = "Thumbnail card size:",
+                ["ZView.Settings.HudGroup"] = "ON-SCREEN DISPLAY (HUD)",
+                ["ZView.Settings.MiniMap"] = "MiniMap Navigator Radar",
+                ["ZView.Settings.PixelGrid"] = "Forensic Pixel Grid",
 
                 // Interactive Modes
                 ["ZView.Mode.Annotate"] = "Visual Annotation (A)",

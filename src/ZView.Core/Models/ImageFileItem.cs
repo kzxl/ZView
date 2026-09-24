@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Media.Imaging;
 
@@ -6,17 +7,37 @@ namespace ZView.Core.Models
 {
     /// <summary>
     /// Represents an image file item discovered in the active directory.
+    /// Supports asynchronous thumbnail binding with INotifyPropertyChanged.
     /// </summary>
-    public class ImageFileItem
+    public class ImageFileItem : INotifyPropertyChanged
     {
+        private BitmapSource? _thumbnail;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         public string FilePath { get; }
         public string FileName { get; }
         public string DirectoryPath { get; }
         public long FileSizeBytes { get; }
         public DateTime DateModified { get; }
         public string Extension { get; }
-        
-        public BitmapSource? Thumbnail { get; set; }
+
+        public BitmapSource? Thumbnail
+        {
+            get => _thumbnail;
+            set
+            {
+                if (!ReferenceEquals(_thumbnail, value))
+                {
+                    if (value != null && !value.IsFrozen && value.CanFreeze)
+                    {
+                        value.Freeze();
+                    }
+                    _thumbnail = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Thumbnail)));
+                }
+            }
+        }
         public int PixelWidth { get; set; }
         public int PixelHeight { get; set; }
 

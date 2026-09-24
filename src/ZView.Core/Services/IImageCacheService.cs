@@ -9,6 +9,8 @@ namespace ZView.Core.Services
     public interface IImageCacheService
     {
         int Capacity { get; set; }
+        long MaxMemoryBytes { get; set; }
+        long MemoryUsageBytes { get; }
         int Count { get; }
         
         bool TryGet(string filePath, out BitmapSource? bitmap);
@@ -19,3 +21,4 @@ namespace ZView.Core.Services
         Task PrefetchAsync(IEnumerable<string> filePaths, IImageLoaderService loader, CancellationToken ct = default);
     }
 }
+
