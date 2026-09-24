@@ -20,4 +20,11 @@
     <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroUI\src\Wpf\ZeroUI.Wpf\ZeroUI.Wpf.csproj" />
     <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroUI\src\Wpf\ZeroUI.Wpf.Media\ZeroUI.Wpf.Media.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Languages\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
+

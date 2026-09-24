@@ -246,6 +246,19 @@ namespace ZView.Services
             LocalizationManager.RegisterTable("vi", viDict);
             LocalizationManager.RegisterTable("en-US", enDict);
             LocalizationManager.RegisterTable("en", enDict);
+
+            // Dynamically load / overwrite with external JSON language files if present in Languages/ directory
+            try
+            {
+                string appDir = AppDomain.CurrentDomain.BaseDirectory;
+                string langDir = System.IO.Path.Combine(appDir, "Languages");
+                if (System.IO.Directory.Exists(langDir))
+                {
+                    LocalizationManager.LoadFromDirectory(langDir, "*.json");
+                }
+            }
+            catch { }
         }
     }
 }
+
