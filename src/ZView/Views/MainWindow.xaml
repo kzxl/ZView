@@ -39,9 +39,10 @@
             <Setter Property="Foreground" Value="{DynamicResource ZeroUI.TextPrimary}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Padding" Value="8,4"/>
-            <Setter Property="Height" Value="28"/>
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="MinWidth" Value="32"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -51,7 +52,7 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4">
+                                CornerRadius="6">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -76,9 +77,10 @@
             <Setter Property="Foreground" Value="{DynamicResource ZeroUI.TextPrimary}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Padding" Value="8,4"/>
-            <Setter Property="Height" Value="28"/>
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="MinWidth" Value="32"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -88,7 +90,7 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4">
+                                CornerRadius="6">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -113,9 +115,9 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{DynamicResource ZeroUI.TextSecondary}"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Width" Value="42"/>
-            <Setter Property="Height" Value="34"/>
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -162,7 +164,7 @@
     <Grid Background="{DynamicResource ZeroUI.BgPrimary}">
         <Grid.RowDefinitions>
             <!-- Row 0: Fluent Extended Custom TitleBar -->
-            <RowDefinition Height="38"/>
+            <RowDefinition Height="40"/>
             <!-- Row 1: Unified High-Performance Viewer Toolbar -->
             <RowDefinition Height="Auto"/>
             <!-- Row 2: Main Viewport Canvas (GPU Accelerated Viewer) -->
@@ -259,79 +261,79 @@
 
                     <!-- Navigation -->
                     <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding PreviousCommand}" ToolTip="{loc:Loc Key=ZView.Nav.Prev, Default='Ảnh trước (← / Backspace)'}">
-                        <TextBlock Text="◀"/>
+                        <TextBlock Text="◀" FontSize="13"/>
                     </Button>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding NextCommand}" ToolTip="{loc:Loc Key=ZView.Nav.Next, Default='Ảnh sau (→ / Space)'}">
-                        <TextBlock Text="▶"/>
+                        <TextBlock Text="▶" FontSize="13"/>
                     </Button>
 
-                    <Rectangle Width="1" Height="18" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="6,0"/>
+                    <Rectangle Width="1" Height="20" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="6,0"/>
 
                     <!-- View Transformations -->
                     <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnFitToWindow_Click" ToolTip="{loc:Loc Key=ZView.Nav.Fit, Default='Vừa khung (F / Ctrl+0)'}">
-                        <TextBlock Text="⤢"/>
+                        <TextBlock Text="⤢" FontSize="14" FontWeight="Bold"/>
                     </Button>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnActualSize_Click" ToolTip="{loc:Loc Key=ZView.Nav.ActualSize, Default='Kích thước gốc 100% (1 / Ctrl+1)'}">
-                        <TextBlock Text="1:1"/>
+                        <TextBlock Text="1:1" FontSize="12" FontWeight="Bold"/>
                     </Button>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnZoomIn_Click" ToolTip="Phóng to (+)">
-                        <TextBlock Text="🔍+"/>
+                        <TextBlock Text="🔍+" FontSize="13"/>
                     </Button>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnZoomOut_Click" ToolTip="Thu nhỏ (-)">
-                        <TextBlock Text="🔍-"/>
+                        <TextBlock Text="🔍-" FontSize="13"/>
                     </Button>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnRotateCW_Click" ToolTip="{loc:Loc Key=ZView.Nav.RotateRight, Default='Xoay phải 90° (R)'}">
-                        <TextBlock Text="↻"/>
+                        <TextBlock Text="↻" FontSize="15" FontWeight="Bold"/>
                     </Button>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Click="BtnFlipH_Click" ToolTip="{loc:Loc Key=ZView.Nav.FlipH, Default='Lật ngang (H)'}">
-                        <TextBlock Text="⇄"/>
+                        <TextBlock Text="⇄" FontSize="14" FontWeight="Bold"/>
                     </Button>
                 </StackPanel>
 
                 <!-- Right Section: Zoom Indicator, HUD Controls & Drawers -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
                     <!-- Zoom badge -->
-                    <Border Background="{DynamicResource ZeroUI.BgInput}" BorderBrush="{DynamicResource ZeroUI.BorderSubtle}" BorderThickness="1" CornerRadius="4" Padding="8,2" Margin="0,0,6,0" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding ZoomPercentageText}" Foreground="{DynamicResource ZeroUI.PrimaryAccent}" FontSize="11" FontWeight="SemiBold"/>
+                    <Border Background="{DynamicResource ZeroUI.BgInput}" BorderBrush="{DynamicResource ZeroUI.BorderSubtle}" BorderThickness="1" CornerRadius="4" Padding="10,3" Margin="0,0,6,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding ZoomPercentageText}" Foreground="{DynamicResource ZeroUI.PrimaryAccent}" FontSize="12" FontWeight="SemiBold"/>
                     </Border>
 
-                    <Rectangle Width="1" Height="18" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="4,0"/>
+                    <Rectangle Width="1" Height="20" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="4,0"/>
 
                     <!-- HUD Toggles -->
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsMiniMapEnabled}" ToolTip="{loc:Loc Key=ZView.Settings.MiniMap, Default='Radar MiniMap'}">
-                        <TextBlock Text="🗺️"/>
+                        <TextBlock Text="🗺️" FontSize="13"/>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsPixelGridEnabled}" ToolTip="{loc:Loc Key=ZView.Settings.PixelGrid, Default='Lưới điểm ảnh (Grid)'}">
-                        <TextBlock Text="▦"/>
+                        <TextBlock Text="▦" FontSize="14"/>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsLoupeEnabled}" ToolTip="Kính lúp nổi theo chuột (Z)">
-                        <TextBlock Text="🔍"/>
+                        <TextBlock Text="🔍" FontSize="13"/>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsFilterVisible}" ToolTip="Tìm kiếm &amp; Lọc ảnh (/ / Ctrl+F)">
-                        <TextBlock Text="🔎"/>
+                        <TextBlock Text="🔎" FontSize="13"/>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsFilmstripVisible}" ToolTip="{loc:Loc Key=ZView.Nav.Filmstrip, Default='Bật/Tắt dải phim (B)'}">
-                        <TextBlock Text="🎞️"/>
+                        <TextBlock Text="🎞️" FontSize="13"/>
                     </ToggleButton>
 
-                    <Rectangle Width="1" Height="18" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="6,0"/>
+                    <Rectangle Width="1" Height="20" Fill="{DynamicResource ZeroUI.BorderDefault}" Margin="6,0"/>
 
                     <!-- Actions & Drawers -->
                     <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding PrintImageCommand}" ToolTip="{loc:Loc Key=ZView.Nav.Print, Default='In ảnh trực tiếp (Ctrl+P)'}">
-                        <TextBlock Text="🖨️"/>
+                        <TextBlock Text="🖨️" FontSize="13"/>
                     </Button>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding CopyImageCommand}" ToolTip="Sao chép ảnh vào Clipboard (Ctrl+C)">
-                        <TextBlock Text="📋"/>
+                        <TextBlock Text="📋" FontSize="13"/>
                     </Button>
 
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsMetadataDrawerOpen}" ToolTip="{loc:Loc Key=ZView.Nav.Info, Default='Thông số &amp; EXIF (I)'}">
-                        <TextBlock Text="ℹ️"/>
+                        <TextBlock Text="ℹ️" FontSize="13"/>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource ToolbarToggleBtnStyle}" IsChecked="{Binding IsSettingsDrawerOpen}" ToolTip="{loc:Loc Key=ZView.Nav.Settings, Default='Cài đặt hiển thị (S)'}">
-                        <TextBlock Text="⚙️"/>
+                        <TextBlock Text="⚙️" FontSize="13"/>
                     </ToggleButton>
                     <Button Style="{StaticResource ToolbarBtnStyle}" Command="{Binding ToggleFullScreenCommand}" ToolTip="{loc:Loc Key=ZView.Nav.Fullscreen, Default='Toàn màn hình (F11)'}">
-                        <TextBlock Text="⛶"/>
+                        <TextBlock Text="⛶" FontSize="14" FontWeight="Bold"/>
                     </Button>
                 </StackPanel>
             </DockPanel>
