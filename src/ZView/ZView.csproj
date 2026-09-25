@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ZView.Core\ZView.Core.csproj" />
     <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroUI\src\ZeroUI.Core\ZeroUI.Core.csproj" />
     <ProjectReference Include="..\..\..\..\ZeroPlatform\ZeroUI\src\Wpf\ZeroUI.Wpf\ZeroUI.Wpf.csproj" />

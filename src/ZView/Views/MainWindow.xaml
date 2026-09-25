@@ -10,6 +10,7 @@
         xmlns:converters="clr-namespace:ZView.Converters"
         mc:Ignorable="d"
         Title="{loc:Loc Key=ZView.Title, Default='ZView — Enterprise Image Workstation'}"
+        Icon="pack://application:,,,/Resources/app.ico"
         Height="840" Width="1320"
         MinHeight="500" MinWidth="780"
         WindowStartupLocation="CenterScreen"
@@ -225,6 +226,7 @@
 
                 <!-- Left: Branding & Dynamic Image Title -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <Image Source="pack://application:,,,/Resources/app.ico" Width="18" Height="18" Margin="0,0,8,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                     <Border Background="{DynamicResource ZeroUI.PrimaryAccent}" CornerRadius="4" Padding="6,2" Margin="0,0,10,0">
                         <TextBlock Text="{loc:Loc Key=ZView.Brand, Default='ZVIEW'}" Foreground="White" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
                     </Border>
