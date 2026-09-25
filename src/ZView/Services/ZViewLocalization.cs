@@ -61,6 +61,15 @@ namespace ZView.Services
                 ["ZView.Settings.HudGroup"] = "CÔNG CỤ HỖ TRỢ TRỰC QUAN (HUD)",
                 ["ZView.Settings.MiniMap"] = "Bản đồ điều hướng radar (MiniMap)",
                 ["ZView.Settings.PixelGrid"] = "Lưới điểm ảnh pháp y (Pixel Grid)",
+                ["ZView.Settings.SystemGroup"] = "TÍCH HỢP HỆ THỐNG (WINDOWS SHELL)",
+                ["ZView.Settings.ContextMenu"] = "Menu chuột phải Windows Explorer",
+                ["ZView.Settings.ContextMenuDesc"] = "Tích hợp tùy chọn 'Xem bằng ZView' vào menu ngữ cảnh chuột phải của tệp ảnh và thư mục",
+                ["ZView.Settings.ContextMenuRegister"] = "Đăng ký Menu",
+                ["ZView.Settings.ContextMenuUnregister"] = "Hủy đăng ký",
+                ["ZView.ContextMenu.FileVerb"] = "Xem bằng ZView",
+                ["ZView.ContextMenu.DirVerb"] = "Xem ảnh bằng ZView",
+                ["ZView.ContextMenu.RegisteredSuccess"] = "Đã đăng ký menu chuột phải Windows Explorer thành công!",
+                ["ZView.ContextMenu.UnregisteredSuccess"] = "Đã hủy đăng ký menu chuột phải thành công!",
 
                 // Interactive Modes
                 ["ZView.Mode.Annotate"] = "Ghi chú & Đo đạc lỗi (A)",
@@ -177,6 +186,15 @@ namespace ZView.Services
                 ["ZView.Settings.HudGroup"] = "ON-SCREEN DISPLAY (HUD)",
                 ["ZView.Settings.MiniMap"] = "MiniMap Navigator Radar",
                 ["ZView.Settings.PixelGrid"] = "Forensic Pixel Grid",
+                ["ZView.Settings.SystemGroup"] = "SYSTEM INTEGRATION (WINDOWS SHELL)",
+                ["ZView.Settings.ContextMenu"] = "Windows Explorer Context Menu",
+                ["ZView.Settings.ContextMenuDesc"] = "Add 'Open with ZView' option to right-click context menu for images and folders",
+                ["ZView.Settings.ContextMenuRegister"] = "Register Menu",
+                ["ZView.Settings.ContextMenuUnregister"] = "Unregister",
+                ["ZView.ContextMenu.FileVerb"] = "Open with ZView",
+                ["ZView.ContextMenu.DirVerb"] = "Open folder in ZView",
+                ["ZView.ContextMenu.RegisteredSuccess"] = "Successfully registered into Windows Explorer context menu!",
+                ["ZView.ContextMenu.UnregisteredSuccess"] = "Successfully removed from Windows Explorer context menu!",
 
                 // Interactive Modes
                 ["ZView.Mode.Annotate"] = "Visual Annotation (A)",

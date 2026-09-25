@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using ZView.Core.Models;
 using ZView.Core.Services;
 using ZView.Core.Utils;
+using ZView.Services;
 
 namespace ZView.ViewModels
 {
@@ -248,6 +249,13 @@ namespace ZView.ViewModels
             set => SetProperty(ref _isPixelGridEnabled, value);
         }
 
+        private bool _isContextMenuRegistered;
+        public bool IsContextMenuRegistered
+        {
+            get => _isContextMenuRegistered;
+            set => SetProperty(ref _isContextMenuRegistered, value);
+        }
+
         public double CurrentZoom
         {
             get => _currentZoom;
@@ -314,6 +322,9 @@ namespace ZView.ViewModels
         public ICommand CheckUpdateCommand { get; }
         public ICommand OpenUpdateDialogCommand { get; }
         public ICommand CloseUpdateDialogCommand { get; }
+        public ICommand ToggleContextMenuCommand { get; }
+        public ICommand RegisterContextMenuCommand { get; }
+        public ICommand UnregisterContextMenuCommand { get; }
 
         public MainViewModel(IImageLoaderService imageLoader, IFolderNavigationService navigation, IImageCacheService cache, IRecentFilesService? recentFiles = null, IUpdateCheckerService? updateChecker = null)
         {
@@ -359,6 +370,44 @@ namespace ZView.ViewModels
             CheckUpdateCommand = new RelayCommand(async () => await CheckForUpdatesAsync());
             OpenUpdateDialogCommand = new RelayCommand(() => IsUpdateDialogOpen = true);
             CloseUpdateDialogCommand = new RelayCommand(() => IsUpdateDialogOpen = false);
+
+            _isContextMenuRegistered = ShellContextMenuService.IsRegistered();
+
+            RegisterContextMenuCommand = new RelayCommand(() =>
+            {
+                string fileVerb = ZeroUI.Core.Localization.LocalizationManager.Get("ZView.ContextMenu.FileVerb", "Xem bằng ZView");
+                string dirVerb = ZeroUI.Core.Localization.LocalizationManager.Get("ZView.ContextMenu.DirVerb", "Xem ảnh bằng ZView");
+                if (ShellContextMenuService.Register(fileVerb: fileVerb, dirVerb: dirVerb))
+                {
+                    IsContextMenuRegistered = true;
+                    string msg = ZeroUI.Core.Localization.LocalizationManager.Get("ZView.ContextMenu.RegisteredSuccess", "Đã đăng ký menu chuột phải Windows Explorer thành công!");
+                    StatusText = msg;
+                    ShowOsd(msg);
+                }
+            });
+
+            UnregisterContextMenuCommand = new RelayCommand(() =>
+            {
+                if (ShellContextMenuService.Unregister())
+                {
+                    IsContextMenuRegistered = false;
+                    string msg = ZeroUI.Core.Localization.LocalizationManager.Get("ZView.ContextMenu.UnregisteredSuccess", "Đã hủy đăng ký menu chuột phải thành công!");
+                    StatusText = msg;
+                    ShowOsd(msg);
+                }
+            });
+
+            ToggleContextMenuCommand = new RelayCommand(() =>
+            {
+                if (IsContextMenuRegistered)
+                {
+                    UnregisterContextMenuCommand.Execute(null);
+                }
+                else
+                {
+                    RegisterContextMenuCommand.Execute(null);
+                }
+            });
 
             _selectedLanguage = SupportedLanguages[0];
 

@@ -658,6 +658,56 @@
                                 </Button>
                             </StackPanel>
                         </Border>
+
+                        <!-- System Integration Group -->
+                        <TextBlock Text="{loc:Loc Key=ZView.Settings.SystemGroup, Default='TÍCH HỢP HỆ THỐNG (WINDOWS SHELL)'}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ZeroUI.TextMuted}" Margin="0,0,0,8"/>
+                        <Border Background="{DynamicResource ZeroUI.BgInput}" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                            <StackPanel>
+                                <DockPanel Margin="0,0,0,8">
+                                    <CheckBox IsChecked="{Binding IsContextMenuRegistered}"
+                                              Command="{Binding ToggleContextMenuCommand}"
+                                              Content="{loc:Loc Key=ZView.Settings.ContextMenu, Default='Menu chuột phải Windows Explorer'}"
+                                              Foreground="{DynamicResource ZeroUI.TextPrimary}"
+                                              FontWeight="SemiBold"
+                                              FontSize="12"
+                                              VerticalAlignment="Center"/>
+                                </DockPanel>
+                                <TextBlock Text="{loc:Loc Key=ZView.Settings.ContextMenuDesc, Default='Tích hợp tùy chọn \'Xem bằng ZView\' vào menu ngữ cảnh chuột phải của tệp ảnh và thư mục'}"
+                                           TextWrapping="Wrap"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource ZeroUI.TextSecondary}"
+                                           Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0"
+                                            Style="{StaticResource ToolbarBtnStyle}"
+                                            Command="{Binding RegisterContextMenuCommand}"
+                                            Padding="8,5"
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="📌 " FontSize="11"/>
+                                            <TextBlock Text="{loc:Loc Key=ZView.Settings.ContextMenuRegister, Default='Đăng ký'}" FontSize="11"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="2"
+                                            Style="{StaticResource ToolbarBtnStyle}"
+                                            Command="{Binding UnregisterContextMenuCommand}"
+                                            Padding="8,5"
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="🗑️ " FontSize="11"/>
+                                            <TextBlock Text="{loc:Loc Key=ZView.Settings.ContextMenuUnregister, Default='Hủy bỏ'}" FontSize="11"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </ScrollViewer>
             </Border>

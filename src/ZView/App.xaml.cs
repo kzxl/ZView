@@ -26,9 +26,21 @@ namespace ZView
             var cache = ImageCacheService.CreateAdaptive(capacity: 24);
             var vm = new MainViewModel(imageLoader, navigation, cache);
 
-            // Handle --capture CLI argument for automated UI auditing
+            // Handle CLI flags for automation & context menu setup
             for (int i = 0; i < e.Args.Length; i++)
             {
+                if (string.Equals(e.Args[i], "--register-context", StringComparison.OrdinalIgnoreCase))
+                {
+                    ZView.Core.Services.ShellContextMenuService.Register();
+                    Shutdown(0);
+                    return;
+                }
+                if (string.Equals(e.Args[i], "--unregister-context", StringComparison.OrdinalIgnoreCase))
+                {
+                    ZView.Core.Services.ShellContextMenuService.Unregister();
+                    Shutdown(0);
+                    return;
+                }
                 if (e.Args[i] == "--capture" && i + 1 < e.Args.Length)
                 {
                     string targetDir = e.Args[i + 1];

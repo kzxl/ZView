@@ -30,11 +30,16 @@
 - **MiniMap Radar Navigator**: Viewport orientation radar for smooth navigation across multi-gigapixel captures.
 - **Slide-In EXIF Drawer (I)**: Full telemetry readout including camera model, lens metadata, ISO, shutter speed, aperture, DPI, aspect ratio, and color depth.
 
-### 4. Workflow Productivity
+### 4. Workflow Productivity & Windows Shell Integration
+- **Explorer Context Menu Integration**: Seamlessly registers into Windows Explorer context menus for all 30+ image formats and folders without requiring UAC/Administrator rights (`HKEY_CURRENT_USER`).
 - **Quick Filmstrip & Filter Bar (B / Ctrl+F)**: Bottom carousel with real-time substring filtering and instant directory jump.
 - **Native Direct Printing (Ctrl+P)**: Built-in document scaling and printer dialog integration.
 - **Internationalization (i18n)**: Multi-language support (English, Vietnamese, Japanese) via modular JSON locale definitions.
 - **Automated Update Notification**: Built-in GitHub Releases checker with notification pill badge.
+- **CLI Automation Support**:
+  - `ZView.exe <path>`: Directly inspect image file or directory.
+  - `ZView.exe --register-context`: Headless registration of Explorer right-click context menu.
+  - `ZView.exe --unregister-context`: Headless removal of Explorer right-click context menu.
 
 ---
 
