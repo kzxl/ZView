@@ -2,8 +2,9 @@
 
 [![Platform](https://img.shields.io/badge/Platform-.NET%208.0%20WPF-blue.svg)](https://dotnet.microsoft.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Universe%20v4.0-purple.svg)]()
+[![Release](https://img.shields.io/badge/Release-v1.0.0-orange.svg)](https://github.com/kzxl/ZView/releases)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)]()
-[![Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
+[![Build](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
 
 **ZView** is a standalone, ultra-fast, GPU-accelerated desktop image viewing and forensic telemetry workstation for Windows. Built for photography professionals, computer vision engineers, and digital artists, ZView delivers zero-latency folder navigation, sub-pixel forensic inspection, real-time telemetry extraction, and seamless multi-format decoding.
 
@@ -108,11 +109,23 @@ dotnet build ZView.slnx
 dotnet test tests/ZView.Tests/ZView.Tests.csproj
 ```
 
-### Publish Lite (Framework-Dependent Single-File Executable)
+### Publish Release Package (Bundled with ZUpdate Auto-Updater)
 ```powershell
-.\publish.ps1
+.\publish.ps1 -Version "v1.0.0"
 ```
-The optimized single-file binary will be generated at `publish/zview-lite/ZView.exe`.
+The script compiles framework-dependent single-file binaries, bundles `ZUpdate.exe` for automated GitHub updates, and packages the distribution ZIP:
+- **Binary Directory**: `publish/zview-lite/` (`ZView.exe`, `ZUpdate.exe`, `Languages/`)
+- **Distribution Archive**: `publish/release/ZView-v1.0.0-win-x64-lite.zip` (~3.0 MB)
+
+---
+
+## 📥 Installation & Getting Started
+
+1. Download the latest `ZView-vX.Y.Z-win-x64-lite.zip` from [GitHub Releases](https://github.com/kzxl/ZView/releases).
+2. Extract the archive to any convenient directory.
+3. Launch `ZView.exe`.
+4. *(Recommended)* Open **Settings (S)** and click **"Đăng ký Menu" (Register)** to integrate ZView into your Windows Explorer right-click context menu.
+5. Whenever a new release is published to GitHub, ZView will notify you with an update pill badge and automatically update in-place via the bundled `ZUpdate` engine.
 
 ---
 
