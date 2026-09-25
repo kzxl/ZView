@@ -288,18 +288,80 @@ namespace ZView.Views
             {
                 try
                 {
-                    string url = !string.IsNullOrEmpty(_vm.AvailableUpdate.AssetDownloadUrl)
-                        ? _vm.AvailableUpdate.AssetDownloadUrl
-                        : _vm.AvailableUpdate.HtmlUrl;
+                    var update = _vm.AvailableUpdate;
+                    string? downloadUrl = !string.IsNullOrEmpty(update.AssetDownloadUrl)
+                        ? update.AssetDownloadUrl
+                        : update.HtmlUrl;
 
-                    if (!string.IsNullOrEmpty(url))
+                    string? zUpdateExe = FindZUpdateExecutable();
+
+                    // Nếu có ZUpdate.exe và download URL là file ZIP hợp lệ thì gọi auto-updater
+                    if (!string.IsNullOrEmpty(zUpdateExe) && File.Exists(zUpdateExe) && !string.IsNullOrEmpty(downloadUrl) && downloadUrl.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                     {
-                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+                        var currentPid = Environment.ProcessId;
+                        var targetDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\', '/');
+
+                        var startInfo = new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = zUpdateExe,
+                            Arguments = $"--app \"ZView\" " +
+                                        $"--pid {currentPid} " +
+                                        $"--target-dir \"{targetDir}\" " +
+                                        $"--url \"{downloadUrl}\" " +
+                                        $"--restart \"ZView.exe\" " +
+                                        $"--version \"{update.LatestVersion}\"",
+                            UseShellExecute = true
+                        };
+
+                        System.Diagnostics.Process.Start(startInfo);
+                        _vm.IsUpdateDialogOpen = false;
+
+                        // Tắt ZView ngay lập tức để giải phóng file locks cho ZUpdate thao tác ghi đè
+                        Application.Current.Shutdown(0);
+                        return;
                     }
+                    else if (!string.IsNullOrEmpty(downloadUrl))
+                    {
+                        // Fallback nếu không có ZUpdate.exe: Mở trình duyệt tải thủ công
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(downloadUrl) { UseShellExecute = true });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"Không thể kích hoạt cập nhật tự động: {ex.Message}", "Cập nhật", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            _vm.IsUpdateDialogOpen = false;
+        }
+
+        private static string? FindZUpdateExecutable()
+        {
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            // 1. Cùng thư mục cài đặt với ZView
+            var localPath = Path.Combine(baseDir, "ZUpdate.exe");
+            if (File.Exists(localPath)) return localPath;
+
+            // 2. Thư mục publish/zupdate-lite của ecosystem (dành cho môi trường dev/staging)
+            var devPaths = new[]
+            {
+                Path.Combine(baseDir, "..", "..", "..", "..", "ZUpdate", "publish", "zupdate-lite", "ZUpdate.exe"),
+                Path.Combine(baseDir, "..", "ZUpdate", "publish", "zupdate-lite", "ZUpdate.exe"),
+                Path.Combine(baseDir, "..", "ZUpdate", "ZUpdate.exe"),
+                Path.Combine(baseDir, "publish", "zupdate-lite", "ZUpdate.exe")
+            };
+
+            foreach (var p in devPaths)
+            {
+                try
+                {
+                    var full = Path.GetFullPath(p);
+                    if (File.Exists(full)) return full;
                 }
                 catch { }
             }
-            _vm.IsUpdateDialogOpen = false;
+
+            return null;
         }
 
         #endregion
